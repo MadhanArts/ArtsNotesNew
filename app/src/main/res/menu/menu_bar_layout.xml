@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_sort"
+        android:icon="@drawable/ic_menu_sort"
+        app:showAsAction="always"
+        android:title="sort icon">
+        <menu>
+            <group>
+                <item
+                    android:id="@+id/menu_sort_title"
+                    android:title="Sort Alphabetically"
+                    />
+
+                <item
+                    android:id="@+id/menu_sort_last_modified"
+                    android:title="Sort by Last Modified"
+                    />
+
+            </group>
+        </menu>
+
+    </item>
+    <item
+        android:id="@+id/menu_add_icon"
+        android:title="Add"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_menu_add_plain"
+        />
+
+</menu>
