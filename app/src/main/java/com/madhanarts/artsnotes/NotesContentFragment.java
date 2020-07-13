@@ -70,9 +70,8 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_notes_content, container, false);
 
-        return view;
+        return inflater.inflate(R.layout.fragment_notes_content, container, false);
     }
 
     @Override

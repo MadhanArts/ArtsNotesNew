@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.madhanarts.artsnotes.NotesTitleFragment;
 import com.madhanarts.artsnotes.R;
 import com.madhanarts.artsnotes.TimeAgo;
 import com.madhanarts.artsnotes.model.NoteItem;
@@ -25,6 +26,8 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
     private boolean isSortedNameAs = false;
     private boolean isLastModifiedAs = true;
 
+    private NotesTitleFragment notesTitleFragment;
+
     public ArrayList<NoteItem> getNoteItems() {
         return noteItems;
     }
@@ -36,10 +39,11 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
     private TimeAgo timeAgo;
 
 
-    public NotesTitleAdapter(ArrayList<NoteItem> noteItems, OnNotesTitleClickListener onNotesTitleClickListener)
+    public NotesTitleAdapter(NotesTitleFragment notesTitleFragment, ArrayList<NoteItem> noteItems, OnNotesTitleClickListener onNotesTitleClickListener)
     {
         this.noteItems = noteItems;
         this.onNotesTitleClickListener = onNotesTitleClickListener;
+        this.notesTitleFragment = notesTitleFragment;
 
     }
 
@@ -56,7 +60,7 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NotesTitleViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NotesTitleViewHolder holder, final int position) {
 
         holder.NotesTitle.setText(noteItems.get(position).getNotesTitle());
  //       holder.NotesLastModified.setText(noteItems.get(position).getNotesLastModified());
@@ -69,6 +73,22 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
             holder.NotesLastModified.setText(timeAgo.getTimeAgo(noteItems.get(position).getNotesLastModified()));
         }
 
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                if(!notesTitleFragment.inActionMode)
+                {
+                    notesTitleFragment.actionMode(position);
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
+
+
     }
 
     @Override
@@ -78,7 +98,7 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
 
 
 
-    public class NotesTitleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
+    public class NotesTitleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView NotesTitle, NotesLastModified;
 
@@ -90,19 +110,25 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
             NotesLastModified = itemView.findViewById(R.id.notes_last_modified);
             itemView.setOnClickListener(this);
 
-            itemView.setOnCreateContextMenuListener(this);
+            //itemView.setOnCreateContextMenuListener(this);
 
         }
 
         @Override
         public void onClick(View v) {
-            onNotesTitleClickListener.onClickTitle(noteItems.get(getAdapterPosition()), getAdapterPosition());
+            if (notesTitleFragment.inActionMode)
+            {
+                notesTitleFragment.selectItem(getAdapterPosition());
+            }
+            else {
+                onNotesTitleClickListener.onClickTitle(noteItems.get(getAdapterPosition()), getAdapterPosition());
+            }
         }
 
-        @Override
+/*        @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.add(this.getAdapterPosition(), 201, 0, "Delete");
-        }
+        }*/
 
     }
 

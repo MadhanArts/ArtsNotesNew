@@ -1,5 +1,6 @@
 package com.madhanarts.artsnotes;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -33,9 +34,13 @@ public class TimeAgo {
         {
             return hours + " hours ago";
         }
-        else if (days == 1)
+        else if (days >= 1)
         {
-            return "a day ago";
+            Date noteTime = new Date(duration);
+            String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            String month = months[noteTime.getMonth()];
+            String date = Integer.toString(noteTime.getDate());
+            return month + " " + date;
         }
         else
         {

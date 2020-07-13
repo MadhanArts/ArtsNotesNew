@@ -2,18 +2,23 @@ package com.madhanarts.artsnotes;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,14 +28,21 @@ import com.madhanarts.artsnotes.model.NoteItem;
 
 import java.util.ArrayList;
 
+
 public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.OnNotesTitleClickListener {
 
     private Toolbar toolbar;
+    private ConstraintLayout toolbarActionModeLayout;
+    private ImageButton toolbarBackButton;
+    private TextView toolbarTextView;
+
+    private ArrayList<NoteItem> selectedNoteItems = new ArrayList<>();
 
     private RecyclerView notesTitlesRecycler;
     private NotesTitleAdapter notesTitleAdapter;
 
-    private ArrayList<NoteItem> noteItems;
+    public boolean inActionMode = false;
+    private int counter = 0;
 
 
     @Override
@@ -41,6 +53,23 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
 
         toolbar = view.findViewById(R.id.toolbar_layout);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+        toolbarBackButton = view.findViewById(R.id.toolbar_action_back_button);
+        toolbarTextView = view.findViewById(R.id.toolbar_action_text_view);
+        toolbarActionModeLayout = view.findViewById(R.id.action_toolbar_layout);
+
+        toolbarActionModeLayout.setVisibility(View.GONE);
+        toolbarBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toolbarActionModeLayout.setVisibility(View.GONE);
+                toolbar.getMenu().clear();
+                inActionMode = false;
+                toolbar.inflateMenu(R.menu.menu_bar_layout);
+                selectedNoteItems.clear();
+                counter = 0;
+            }
+        });
 
         return view;
 
@@ -61,7 +90,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         inflater.inflate(R.menu.menu_bar_layout, menu);
     }
 
-    @Override
+/*    @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId())
         {
@@ -76,7 +105,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
 
         }
 
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -130,6 +159,12 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                 }
                 return true;
 
+            case R.id.action_delete:
+                for (int i = 0; i < selectedNoteItems.size(); i++) {
+                    deleteNote(i);
+                }
+                toolbarBackButton.callOnClick();
+                return true;
 
             default:
 
@@ -147,20 +182,55 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         notesTitlesRecycler = view.findViewById(R.id.notes_title_recycler);
 
 
-        //noteItems = getNotes();
-
         //NotesTitleAdapter notesTitleAdapter = new NotesTitleAdapter(noteItems, this);
         notesTitlesRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         notesTitlesRecycler.setHasFixedSize(true);
+
         //NotesTitlesRecycler.setAdapter(notesTitleAdapter);
 
-        //NotesTitlesRecycler.getAdapter();
     }
 
+    public void actionMode(int position)
+    {
+        if (!inActionMode)
+        {
+            toolbar.getMenu().clear();
+
+            toolbarActionModeLayout.setVisibility(View.VISIBLE);
+            toolbar.inflateMenu(R.menu.context_action_mode_menu);
+            selectedNoteItems.add(notesTitleAdapter.getNoteItems().get(position));
+            counter++;
+            updateToolbarTextView(counter);
+            inActionMode = true;
+        }
+    }
+
+    public void selectItem(int position)
+    {
+        if (!selectedNoteItems.contains(notesTitleAdapter.getNoteItems().get(position)))
+        {
+            selectedNoteItems.add(notesTitleAdapter.getNoteItems().get(position));
+            counter++;
+        }
+        else
+        {
+            selectedNoteItems.remove(notesTitleAdapter.getNoteItems().get(position));
+            counter--;
+        }
+
+        updateToolbarTextView(counter);
+    }
+
+    private void updateToolbarTextView(int counter)
+    {
+        if (counter >= 0)
+        {
+            toolbarTextView.setText(counter + " item selected");
+        }
+    }
 
     private void deleteNote(int position)
     {
-
 
         BackgroundTask backgroundTask = new BackgroundTask(getActivity(), notesTitlesRecycler);
         backgroundTask.execute("delete_note", Integer.toString(position));
@@ -194,7 +264,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
     public void onResume() {
         super.onResume();
 
-        BackgroundTask backgroundTask = new BackgroundTask(getActivity(), notesTitlesRecycler, this, new BackgroundTaskCompleteListener() {
+        BackgroundTask backgroundTask = new BackgroundTask(getActivity(), NotesTitleFragment.this, notesTitlesRecycler, this, new BackgroundTaskCompleteListener() {
             @Override
             public void onTaskComplete(NotesTitleAdapter notesTitleAdapter) {
                 NotesTitleFragment.this.notesTitleAdapter = notesTitleAdapter;
