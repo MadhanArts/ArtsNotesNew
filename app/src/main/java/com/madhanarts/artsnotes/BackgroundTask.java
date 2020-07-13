@@ -32,13 +32,13 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
 
     }
 
-    public BackgroundTask(Context context, RecyclerView titleRecyclerView, NotesTitleAdapter.OnNotesTitleClickListener titleClickListener, NotesTitleFragment.BackgroundTaskCompleteListener backgroundTaskCompleteListener)
+    public BackgroundTask(Context context, NotesTitleFragment notesTitleFragment, RecyclerView titleRecyclerView, NotesTitleAdapter.OnNotesTitleClickListener titleClickListener, NotesTitleFragment.BackgroundTaskCompleteListener backgroundTaskCompleteListener)
     {
         this.context = context;
         this.titleRecyclerView = titleRecyclerView;
         this.titleClickListener = titleClickListener;
         this.backgroundTaskCompleteListener = backgroundTaskCompleteListener;
-        titleAdapter = new NotesTitleAdapter(noteItems, titleClickListener);
+        titleAdapter = new NotesTitleAdapter(notesTitleFragment, noteItems, titleClickListener);
         titleRecyclerView.setAdapter(titleAdapter);
 
     }
