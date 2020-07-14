@@ -52,7 +52,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
     @Override
     public NotesContentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_notes_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_notes_content_item, parent, false);
         Log.d("content_op", "On layout inflater");
 
         return new NotesContentViewHolder(view);

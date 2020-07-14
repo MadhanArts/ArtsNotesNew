@@ -60,7 +60,7 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NotesTitleViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final NotesTitleViewHolder holder, final int position) {
 
         holder.NotesTitle.setText(noteItems.get(position).getNotesTitle());
  //       holder.NotesLastModified.setText(noteItems.get(position).getNotesLastModified());
@@ -79,7 +79,10 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
 
                 if(!notesTitleFragment.inActionMode)
                 {
-                    notesTitleFragment.actionMode(position);
+                    if (position != -1)
+                    {
+                        notesTitleFragment.actionMode(holder.itemView, position);
+                    }
                     return true;
                 }
 
@@ -118,7 +121,7 @@ public class NotesTitleAdapter extends RecyclerView.Adapter<NotesTitleAdapter.No
         public void onClick(View v) {
             if (notesTitleFragment.inActionMode)
             {
-                notesTitleFragment.selectItem(getAdapterPosition());
+                notesTitleFragment.selectItem(itemView, getAdapterPosition());
             }
             else {
                 onNotesTitleClickListener.onClickTitle(noteItems.get(getAdapterPosition()), getAdapterPosition());

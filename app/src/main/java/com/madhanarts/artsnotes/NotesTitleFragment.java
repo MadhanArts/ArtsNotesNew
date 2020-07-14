@@ -2,14 +2,12 @@ package com.madhanarts.artsnotes;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,7 +47,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_notes_title, container, false);
+        final View view = inflater.inflate(R.layout.fragment_notes_title, container, false);
 
         toolbar = view.findViewById(R.id.toolbar_layout);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -66,13 +64,25 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                 toolbar.getMenu().clear();
                 inActionMode = false;
                 toolbar.inflateMenu(R.menu.menu_bar_layout);
+                removeActionMode();
                 selectedNoteItems.clear();
                 counter = 0;
+
             }
         });
 
         return view;
 
+    }
+
+    private void removeActionMode()
+    {
+        for (int i = 0; i < selectedNoteItems.size(); i++)
+        {
+            int index = notesTitleAdapter.getNoteItems().indexOf(selectedNoteItems.get(i));
+            NotesTitleAdapter.NotesTitleViewHolder holder = (NotesTitleAdapter.NotesTitleViewHolder) notesTitlesRecycler.findViewHolderForAdapterPosition(index);
+            holder.itemView.setBackgroundResource(R.drawable.notes_item_bg);
+        }
     }
 
 
@@ -160,10 +170,15 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                 return true;
 
             case R.id.action_delete:
+                removeActionMode();
                 for (int i = 0; i < selectedNoteItems.size(); i++) {
-                    deleteNote(i);
+                    int index = notesTitleAdapter.getNoteItems().indexOf(selectedNoteItems.get(i));
+                    deleteNote(index);
                 }
+
+                selectedNoteItems.clear();
                 toolbarBackButton.callOnClick();
+
                 return true;
 
             default:
@@ -190,7 +205,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
 
     }
 
-    public void actionMode(int position)
+    public void actionMode(View itemView, int position)
     {
         if (!inActionMode)
         {
@@ -200,22 +215,33 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
             toolbar.inflateMenu(R.menu.context_action_mode_menu);
             selectedNoteItems.add(notesTitleAdapter.getNoteItems().get(position));
             counter++;
+            itemView.setBackgroundResource(R.drawable.notes_item_action_mode_bg);
             updateToolbarTextView(counter);
             inActionMode = true;
+
+
+
         }
     }
 
-    public void selectItem(int position)
+    public void selectItem(View itemView, int position)
     {
         if (!selectedNoteItems.contains(notesTitleAdapter.getNoteItems().get(position)))
         {
             selectedNoteItems.add(notesTitleAdapter.getNoteItems().get(position));
             counter++;
+            itemView.setBackgroundResource(R.drawable.notes_item_action_mode_bg);
         }
         else
         {
             selectedNoteItems.remove(notesTitleAdapter.getNoteItems().get(position));
             counter--;
+            itemView.setBackgroundResource(R.drawable.notes_item_bg);
+
+        }
+        if (counter == 0)
+        {
+            toolbarBackButton.callOnClick();
         }
 
         updateToolbarTextView(counter);

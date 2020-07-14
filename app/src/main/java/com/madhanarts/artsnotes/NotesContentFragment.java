@@ -301,25 +301,43 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             @Override
             public void handleOnBackPressed() {
 
-                if (inEditMode)
-                {
+                if (option.equals("create_new")) {
 
-                    textViewModeToolbar();
-                    textViewModeEditText();
-                    saveNotes();
-                    inEditMode = false;
-                    NotesContentAdapter.doubleTapped = false;
+                    if (inEditMode && noteItem.getNotesContentPathFiles().size() > 0) {
+
+                        textViewModeToolbar();
+                        textViewModeEditText();
+                        saveNotes();
+                        inEditMode = false;
+                        NotesContentAdapter.doubleTapped = false;
 
 
+                        //Toast.makeText(getContext(), "Back button is pressed", Toast.LENGTH_SHORT).show();
 
-                    //Toast.makeText(getContext(), "Back button is pressed", Toast.LENGTH_SHORT).show();
+                    } else {
+                        this.setEnabled(false);
+                        getActivity().getSupportFragmentManager().popBackStackImmediate();
 
+                    }
                 }
-                else
+                else if (option.equals("get_exist"))
                 {
-                    this.setEnabled(false);
-                    getActivity().getSupportFragmentManager().popBackStackImmediate();
+                    if (inEditMode)
+                    {
+                        textViewModeToolbar();
+                        textViewModeEditText();
+                        saveNotes();
+                        inEditMode = false;
+                        NotesContentAdapter.doubleTapped = false;
 
+
+                        //Toast.makeText(getContext(), "Back button is pressed", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        this.setEnabled(false);
+                        getActivity().getSupportFragmentManager().popBackStackImmediate();
+
+                    }
                 }
             }
         };
@@ -556,7 +574,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
             String notesFilePath = "";
 
-            long notesLastModified = 0;
+            long notesLastModified;
             if (noteItemsFile.size() > 0) {
                 notesLastModified = noteItemsFile.get(0).lastModified();
             }
@@ -637,7 +655,10 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     public void onPause() {
         super.onPause();
 
-        saveNotes();
+        if (inEditMode && noteItem.getNotesContentPathFiles().size() > 0)
+        {
+            saveNotes();
+        }
 
 
         //option = "get_exist";

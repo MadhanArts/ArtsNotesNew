@@ -37,6 +37,7 @@
             android:paddingBottom="15dp"
             android:text="Note title"
             android:textSize="20sp"
+            android:singleLine="true"
             app:layout_constraintHorizontal_weight="5"
 
 
