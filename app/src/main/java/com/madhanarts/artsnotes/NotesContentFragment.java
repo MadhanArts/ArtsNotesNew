@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,6 +47,12 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     private NoteItem noteItem;
     private ArrayList<File> noteItemsFile;
 
+    private ArrayList<File> selectedNoteItemsFile = new ArrayList<>();
+    private ConstraintLayout contentToolbarLayout;
+    private ConstraintLayout contentActionToolbarLayout;
+    private ImageButton contentActionToolbarBackButton;
+
+    private Toolbar toolbar;
     private ImageButton addButton;
     private EditText toolbarEditText;
     private Drawable toolbarEditTextBack;
@@ -163,8 +173,58 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.note_content_action_mode_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId())
+        {
+            case R.id.content_action_delete:
+
+                if (selectedNoteItemsFile.size() == 0)
+                {
+                    contentToolbarLayout.setVisibility(View.GONE);
+                    contentActionToolbarLayout.setVisibility(View.VISIBLE);
+
+                }
+                else
+                {
+                    deleteNoteItems();
+                }
+
+                Toast.makeText(getActivity(), "Delete is selected", Toast.LENGTH_SHORT).show();
+
+                return true;
+
+            case R.id.content_action_send:
+
+                Toast.makeText(getActivity(), "Send is selected", Toast.LENGTH_SHORT).show();
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
+    }
+
+    private void deleteNoteItems() {
+
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        toolbar = view.findViewById(R.id.toolbar);
+        contentToolbarLayout = view.findViewById(R.id.content_toolbar_layout);
+        contentActionToolbarLayout = view.findViewById(R.id.content_action_toolbar_layout);
+        contentActionToolbarBackButton = view.findViewById(R.id.content_toolbar_action_back_button);
 
         notesContentRecycler = view.findViewById(R.id.notes_content_recycler);
         addButton = view.findViewById(R.id.notes_content_add_button);
@@ -521,6 +581,8 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         toolbarEditText.setClickable(false);
         toolbarEditText.setBackground(null);
 
+        //toolbar.inflateMenu(R.menu.note_content_action_mode_menu);
+
         addButton.setVisibility(View.GONE);
 
 
@@ -539,6 +601,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         toolbarEditText.setClickable(true);
         toolbarEditText.setBackground(toolbarEditTextBack);
 
+        toolbar.getMenu().clear();
         addButton.setVisibility(View.VISIBLE);
 
 

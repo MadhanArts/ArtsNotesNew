@@ -47,10 +47,11 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_notes_title, container, false);
+        View view = inflater.inflate(R.layout.fragment_notes_title, container, false);
 
         toolbar = view.findViewById(R.id.toolbar_layout);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
 
         toolbarBackButton = view.findViewById(R.id.toolbar_action_back_button);
         toolbarTextView = view.findViewById(R.id.toolbar_action_text_view);
@@ -100,22 +101,6 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         inflater.inflate(R.menu.menu_bar_layout, menu);
     }
 
-/*    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId())
-        {
-            case 201:
-
-                deleteNote(item.getGroupId());
-
-                return true;
-
-            default:
-                return super.onContextItemSelected(item);
-
-        }
-
-    }*/
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -165,7 +150,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                 }
                 else
                 {
-                    Toast.makeText(getContext(), "Sorting is supported only from Nougat", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Sorting is supported only from Nougat", Toast.LENGTH_SHORT).show();
                 }
                 return true;
 
@@ -180,6 +165,9 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                 toolbarBackButton.callOnClick();
 
                 return true;
+
+            case R.id.action_share:
+                Toast.makeText(getActivity(), "Share option is selected", Toast.LENGTH_SHORT).show();
 
             default:
 

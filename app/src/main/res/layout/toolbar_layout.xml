@@ -7,6 +7,8 @@
     android:background="@color/colorPrimaryDark"
     android:elevation="4dp"
 
+    app:contentInsetStart="0dp"
+
     android:id="@+id/toolbar_layout"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -24,6 +26,7 @@
             android:src="@drawable/ic_action_back_arrow"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
+            android:padding="8dp"
 
             android:id="@+id/toolbar_action_back_button"
 
@@ -42,7 +45,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
 
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="20dp"
 
             android:textSize="20sp"
             android:textColor="@android:color/white"
