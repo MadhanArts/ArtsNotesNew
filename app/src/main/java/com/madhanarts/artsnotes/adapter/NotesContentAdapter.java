@@ -3,6 +3,7 @@ package com.madhanarts.artsnotes.adapter;
 import android.content.Context;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,13 +38,16 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
     private ToolbarViewChanger toolbarViewChanger;
     private PlayButtonListener playButtonListener;
 
+    private NotesContentFragment notesContentFragment;
 
-    public NotesContentAdapter(Context context, ArrayList<File> notesItemFiles, ToolbarViewChanger toolbarViewChanger, PlayButtonListener playButtonListener)
+
+    public NotesContentAdapter(NotesContentFragment notesContentFragment, Context context, ArrayList<File> notesItemFiles, ToolbarViewChanger toolbarViewChanger, PlayButtonListener playButtonListener)
     {
         this.context = context;
         this.notesItemFiles = notesItemFiles;
         this.toolbarViewChanger = toolbarViewChanger;
         this.playButtonListener = playButtonListener;
+        this.notesContentFragment = notesContentFragment;
 
     }
 
@@ -82,16 +86,6 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 holder.notesEditText.setClickable(true);
                 NotesContentFragment.inEditMode = true;
 
-
-                holder.itemView.setOnCreateContextMenuListener(null);
-
-
-            }
-            else
-            {
-
-                holder.itemView.setOnCreateContextMenuListener(holder);
-
             }
 
         }
@@ -100,13 +94,10 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             holder.notesEditText.setVisibility(View.GONE);
             holder.notesRecordLayout.setVisibility(View.VISIBLE);
             if (doubleTapped) {
-                holder.itemView.setOnCreateContextMenuListener(null);
+                //holder.itemView.setOnCreateContextMenuListener(null);
                 NotesContentFragment.inEditMode = true;
             }
-            else
-            {
-                holder.itemView.setOnCreateContextMenuListener(holder);
-            }
+
         }
 
     }
@@ -116,7 +107,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
         return notesItemFiles.size();
     }
 
-    public class NotesContentViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+    public class NotesContentViewHolder extends RecyclerView.ViewHolder {
 
         // for text layout
         public EditText notesEditText;
@@ -127,7 +118,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
         public SeekBar notesRecordSeekBar;
         public Chronometer notesRecordTimer;
 
-        public NotesContentViewHolder(@NonNull View itemView) {
+        public NotesContentViewHolder(@NonNull final View itemView) {
 
             super(itemView);
 
@@ -151,15 +142,25 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                     @Override
                                                     public void onSingleClick(View v) {
 
+                                                        if(notesContentFragment.inActionMode)
+                                                        {
+                                                            if (itemView != null)
+                                                            {
+                                                                notesContentFragment.selectItem(itemView, getAdapterPosition());
+                                                            }
+                                                        }
+
                                                     }
 
                                                     @Override
                                                     public void onDoubleClick(View v) {
 
-                                                        doubleTapped = true;
-                                                        toolbarViewChanger.changeToolbarView();
+                                                        if (!notesContentFragment.inActionMode){
+                                                            doubleTapped = true;
+                                                            toolbarViewChanger.changeToolbarView();
 
-                                                        notifyDataSetChanged();
+                                                            notifyDataSetChanged();
+                                                        }
 
                                                     }
                                                 });
@@ -169,12 +170,20 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
                 notesEditText.setFocusable(false);
                 notesEditText.setFocusableInTouchMode(false);
-                notesEditText.setClickable(false);
+
+                //notesEditText.setClickable(false);
                 NotesContentFragment.inEditMode = false;
 
                 notesEditText.setOnClickListener(new DoubleClickListener() {
                                                      @Override
                                                      public void onSingleClick(View v) {
+                                                         if(notesContentFragment.inActionMode)
+                                                         {
+                                                             if (itemView != null)
+                                                             {
+                                                                 notesContentFragment.selectItem(itemView, getAdapterPosition());
+                                                             }
+                                                         }
                                                          Log.d("touch_event", "Single Clicked");
                                                          //notesEditText.setFocusableInTouchMode(true);
                                                      }
@@ -183,14 +192,33 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                      public void onDoubleClick(View v) {
                                                          Log.d("touch_event", "Double Clicked");
 
-                                                         doubleTapped = true;
-                                                         toolbarViewChanger.changeToolbarView();
-
-                                                         notifyDataSetChanged();
+                                                         if (!notesContentFragment.inActionMode) {
+                                                             doubleTapped = true;
+                                                             toolbarViewChanger.changeToolbarView();
+                                                             notifyDataSetChanged();
+                                                         }
 
                                                      }
                                                  });
             }
+
+            notesRecordLayout.setOnClickListener(new DoubleClickListener() {
+                @Override
+                public void onSingleClick(View v) {
+                    if (notesContentFragment.inActionMode)
+                    {
+                        if (itemView != null)
+                        {
+                            notesContentFragment.selectItem(itemView, getAdapterPosition());
+                        }
+                    }
+                }
+
+                @Override
+                public void onDoubleClick(View v) {
+
+                }
+            });
 
 
             notesEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -221,17 +249,11 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
 
 
+
+
             Log.d("content_op", "View holder class");
 
         }
-
-
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.add(this.getAdapterPosition(), 101, 0, "delete");
-        }
-
-
 
     }
 

@@ -16,12 +16,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -29,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.madhanarts.artsnotes.adapter.NotesContentAdapter;
+import com.madhanarts.artsnotes.adapter.NotesTitleAdapter;
 import com.madhanarts.artsnotes.model.NoteItem;
 
 import java.io.File;
@@ -47,10 +50,11 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     private NoteItem noteItem;
     private ArrayList<File> noteItemsFile;
 
-    private ArrayList<File> selectedNoteItemsFile = new ArrayList<>();
+    private ArrayList<File> selectedNoteItemsFile = null;
     private ConstraintLayout contentToolbarLayout;
-    private ConstraintLayout contentActionToolbarLayout;
+    private ConstraintLayout contentToolbarActionModeLayout;
     private ImageButton contentActionToolbarBackButton;
+    private TextView contentActionToolbarTextView;
 
     private Toolbar toolbar;
     private ImageButton addButton;
@@ -75,13 +79,54 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     private NotesContentAdapter.NotesContentViewHolder viewHolder;
     private long timeWhenStopped = 0;
 
+    public boolean inActionMode = false;
+    private int counter = 0;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        return inflater.inflate(R.layout.fragment_notes_content, container, false);
+        View view = inflater.inflate(R.layout.fragment_notes_content, container, false);
+
+        toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+        contentToolbarLayout = view.findViewById(R.id.content_toolbar_layout);
+        contentToolbarActionModeLayout = view.findViewById(R.id.content_action_toolbar_layout);
+        contentActionToolbarBackButton = view.findViewById(R.id.content_toolbar_action_back_button);
+        contentActionToolbarTextView = view.findViewById(R.id.content_toolbar_action_text_view);
+
+        contentActionToolbarBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                contentToolbarActionModeLayout.setVisibility(View.GONE);
+                contentToolbarLayout.setVisibility(View.VISIBLE);
+
+                //toolbar.getMenu().clear();
+                inActionMode = false;
+                //toolbar.inflateMenu(R.menu.menu_bar_layout);
+                removeActionMode();
+                selectedNoteItemsFile.clear();
+                selectedNoteItemsFile = null;
+                counter = 0;
+
+            }
+        });
+
+        return view;
+
+    }
+
+    private void removeActionMode()
+    {
+        for (int i = 0; i < selectedNoteItemsFile.size(); i++)
+        {
+            int index = noteItemsFile.indexOf(selectedNoteItemsFile.get(i));
+            NotesContentAdapter.NotesContentViewHolder holder = (NotesContentAdapter.NotesContentViewHolder) notesContentRecycler.findViewHolderForAdapterPosition(index);
+            holder.itemView.setBackgroundResource(R.drawable.notes_item_bg);
+        }
     }
 
     @Override
@@ -98,65 +143,6 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
         switch (item.getItemId()) {
             case 101:
-
-                if (getExtension(noteItemsFile.get(item.getGroupId())).equals(".txt")) {
-                    if (noteItemsFile.get(item.getGroupId()).delete()) {
-                        File file = noteItemsFile.remove(item.getGroupId());
-                        Toast.makeText(getContext(), file.getName() + " Item deleted", Toast.LENGTH_SHORT).show();
-
-                        if (noteItemsFile.size() <= 0) {
-                            noteItemsFile = new ArrayList<>();
-                        }
-
-                        noteItem.setNotesContentPathFiles(noteItemsFile);
-                        notesContentRecycler.setAdapter(notesContentAdapter);
-                        notesContentAdapter.notifyDataSetChanged();
-                        saveNotes();
-                    } else {
-                        Toast.makeText(getContext(), "This item cannot be deleted", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else if (getExtension((noteItemsFile.get(item.getGroupId()))).equals(".3gp"))
-                {
-                    if (fileToPlay == null)
-                    {
-                        if (noteItemsFile.get(item.getGroupId()).delete())
-                        {
-                            noteItemsFile.remove(item.getGroupId());
-                            Toast.makeText(getActivity(), "Music file is deleted at " + item.getGroupId(), Toast.LENGTH_SHORT).show();
-                            if (noteItemsFile.size() <= 0) {
-                                noteItemsFile = new ArrayList<>();
-                            }
-                            noteItem.setNotesContentPathFiles(noteItemsFile);
-                            notesContentRecycler.setAdapter(notesContentAdapter);
-                            notesContentAdapter.notifyDataSetChanged();
-                            saveNotes();
-                        } else {
-                            Toast.makeText(getContext(), "This item cannot be deleted", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    else {
-                        viewHolder = (NotesContentAdapter.NotesContentViewHolder) notesContentRecycler.findViewHolderForAdapterPosition(item.getGroupId());
-
-                        reset(item.getGroupId());
-                        if (noteItemsFile.get(item.getGroupId()).delete()) {
-                            File file = noteItemsFile.remove(item.getGroupId());
-                            Toast.makeText(getContext(), file.getName() + " Item deleted", Toast.LENGTH_SHORT).show();
-
-                            if (noteItemsFile.size() <= 0) {
-                                noteItemsFile = new ArrayList<>();
-                            }
-
-                            noteItem.setNotesContentPathFiles(noteItemsFile);
-                            notesContentRecycler.setAdapter(notesContentAdapter);
-                            notesContentAdapter.notifyDataSetChanged();
-                            saveNotes();
-                        } else {
-                            Toast.makeText(getContext(), "This item cannot be deleted", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                }
 
                 return true;
 
@@ -185,15 +171,26 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         {
             case R.id.content_action_delete:
 
-                if (selectedNoteItemsFile.size() == 0)
+                if (selectedNoteItemsFile == null)
                 {
+                    selectedNoteItemsFile = new ArrayList<>();
+                    inActionMode = true;
                     contentToolbarLayout.setVisibility(View.GONE);
-                    contentActionToolbarLayout.setVisibility(View.VISIBLE);
+                    contentToolbarActionModeLayout.setVisibility(View.VISIBLE);
+                    updateToolbarTextView(0);
 
                 }
                 else
                 {
-                    deleteNoteItems();
+                    removeActionMode();
+                    for (int i = 0; i < selectedNoteItemsFile.size(); i++) {
+                        int index = noteItemsFile.indexOf(selectedNoteItemsFile.get(i));
+                        deleteNoteItems(index);
+                    }
+
+                    selectedNoteItemsFile.clear();
+                    contentActionToolbarBackButton.callOnClick();
+
                 }
 
                 Toast.makeText(getActivity(), "Delete is selected", Toast.LENGTH_SHORT).show();
@@ -213,18 +210,69 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
     }
 
-    private void deleteNoteItems() {
+    private void deleteNoteItems(int index) {
 
+        /*if (getExtension(noteItemsFile.get(index)).equals(".txt")) {
+
+        }*/
+        if (getExtension(noteItemsFile.get(index)).equals(".3gp"))
+        {
+            if (fileToPlay != null){
+                viewHolder = (NotesContentAdapter.NotesContentViewHolder) notesContentRecycler.findViewHolderForAdapterPosition(index);
+                reset(index);
+            }
+        }
+
+        if (noteItemsFile.get(index).delete()) {
+            File file = noteItemsFile.remove(index);
+            Toast.makeText(getContext(), file.getName() + " Item deleted", Toast.LENGTH_SHORT).show();
+
+            if (noteItemsFile.size() <= 0) {
+                noteItemsFile = new ArrayList<>();
+            }
+
+            noteItem.setNotesContentPathFiles(noteItemsFile);
+            notesContentRecycler.setAdapter(notesContentAdapter);
+            notesContentAdapter.notifyDataSetChanged();
+            saveNotes();
+        } else {
+            Toast.makeText(getContext(), "This item cannot be deleted", Toast.LENGTH_SHORT).show();
+        }
+
+
+
+    }
+
+    public void selectItem(View itemView, int position)
+    {
+        if (!selectedNoteItemsFile.contains(noteItemsFile.get(position)))
+        {
+            selectedNoteItemsFile.add(noteItemsFile.get(position));
+            counter++;
+            itemView.setBackgroundResource(R.drawable.notes_item_action_mode_bg);
+        }
+        else
+        {
+            selectedNoteItemsFile.remove(noteItemsFile.get(position));
+            counter--;
+            itemView.setBackgroundResource(R.drawable.notes_item_bg);
+
+        }
+        updateToolbarTextView(counter);
+    }
+
+    private void updateToolbarTextView(int counter)
+    {
+        if (counter >= 0)
+        {
+            contentActionToolbarTextView.setText(counter + " item selected");
+        }
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        toolbar = view.findViewById(R.id.toolbar);
-        contentToolbarLayout = view.findViewById(R.id.content_toolbar_layout);
-        contentActionToolbarLayout = view.findViewById(R.id.content_action_toolbar_layout);
-        contentActionToolbarBackButton = view.findViewById(R.id.content_toolbar_action_back_button);
 
         notesContentRecycler = view.findViewById(R.id.notes_content_recycler);
         addButton = view.findViewById(R.id.notes_content_add_button);
@@ -280,7 +328,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         }
 
 
-        notesContentAdapter = new NotesContentAdapter(getContext(), noteItemsFile,this, this);
+        notesContentAdapter = new NotesContentAdapter(NotesContentFragment.this, getContext(), noteItemsFile,this, this);
         notesContentRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         notesContentRecycler.setHasFixedSize(true);
 
@@ -463,6 +511,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                 stopAudio();
                 viewHolder = null;
             }
+
+
+            fileToPlay = null;
         }
 
     }
@@ -506,6 +557,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         viewHolder.notesRecordSeekBar.setProgress(0);
         isPlaying = false;
         isPlayerCompleted = true;
+
 
         seekBarHandler.removeCallbacks(updateSeekBar);
 
@@ -581,7 +633,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         toolbarEditText.setClickable(false);
         toolbarEditText.setBackground(null);
 
-        //toolbar.inflateMenu(R.menu.note_content_action_mode_menu);
+        toolbar.inflateMenu(R.menu.note_content_action_mode_menu);
 
         addButton.setVisibility(View.GONE);
 
@@ -617,10 +669,10 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
             //notesContentAdapter.saveTextFile(viewHolder.notesEditText.getText().toString(), i);
             if (viewHolder != null) {
-                viewHolder.itemView.setOnCreateContextMenuListener(viewHolder);
+                //viewHolder.itemView.setOnCreateContextMenuListener(viewHolder);
                 viewHolder.notesEditText.setFocusable(false);
                 viewHolder.notesEditText.setFocusableInTouchMode(false);
-                viewHolder.notesEditText.setClickable(false);
+                //viewHolder.notesEditText.setClickable(false);
             }
         }
     }

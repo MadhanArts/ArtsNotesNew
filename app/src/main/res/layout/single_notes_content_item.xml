@@ -20,6 +20,9 @@
 
         android:visibility="visible"
 
+        android:textIsSelectable="true"
+        android:longClickable="true"
+
         android:inputType="textMultiLine"
         android:background="@android:color/transparent"
 
