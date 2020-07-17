@@ -170,6 +170,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
                 notesEditText.setFocusable(false);
                 notesEditText.setFocusableInTouchMode(false);
+                notesEditText.setTextIsSelectable(true);
 
                 //notesEditText.setClickable(false);
                 NotesContentFragment.inEditMode = false;
@@ -260,20 +261,21 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
     public void saveTextFile(String text, int position)
     {
+        if (position != -1) {
+            try {
 
-        try {
+                FileOutputStream myFileWriter = new FileOutputStream(notesItemFiles.get(position));
 
-            FileOutputStream myFileWriter = new FileOutputStream(notesItemFiles.get(position));
+                myFileWriter.write(text.getBytes());
 
-            myFileWriter.write(text.getBytes());
+                myFileWriter.close();
 
-            myFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("content_op", notesItemFiles.get(position).getName() + " saved");
         }
-
-        Log.d("content_op", notesItemFiles.get(position).getName() + " saved");
 
     }
 

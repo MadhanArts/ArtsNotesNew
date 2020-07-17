@@ -132,25 +132,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setHasOptionsMenu(true);
     }
 
-
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-
-        switch (item.getItemId()) {
-            case 101:
-
-                return true;
-
-            default:
-                return super.onContextItemSelected(item);
-
-        }
-    }
 
     private String getExtension(File currentFile)
     {
@@ -161,7 +145,17 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
         inflater.inflate(R.menu.note_content_action_mode_menu, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (option.equals("create_new"))
+        {
+            menu.clear();
+        }
     }
 
     @Override
@@ -285,7 +279,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         {
             noteItem = new NoteItem(0, null, new ArrayList<File>(), 0);
             noteItemsFile = noteItem.getNotesContentPathFiles();
-
+            getActivity().invalidateOptionsMenu();
             inEditMode = true;
 
         }
@@ -419,9 +413,6 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                         inEditMode = false;
                         NotesContentAdapter.doubleTapped = false;
 
-
-                        //Toast.makeText(getContext(), "Back button is pressed", Toast.LENGTH_SHORT).show();
-
                     } else {
                         this.setEnabled(false);
                         getActivity().getSupportFragmentManager().popBackStackImmediate();
@@ -441,7 +432,12 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
                         //Toast.makeText(getContext(), "Back button is pressed", Toast.LENGTH_SHORT).show();
 
-                    } else {
+                    }
+                    else  if (inActionMode)
+                    {
+                        contentActionToolbarBackButton.callOnClick();
+                    }
+                    else {
                         this.setEnabled(false);
                         getActivity().getSupportFragmentManager().popBackStackImmediate();
 
@@ -648,12 +644,13 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     private void editViewModeToolbar()
     {
 
+        toolbar.getMenu().clear();
+
         toolbarEditText.setFocusable(true);
         toolbarEditText.setFocusableInTouchMode(true);
         toolbarEditText.setClickable(true);
         toolbarEditText.setBackground(toolbarEditTextBack);
 
-        toolbar.getMenu().clear();
         addButton.setVisibility(View.VISIBLE);
 
 
@@ -671,7 +668,8 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             if (viewHolder != null) {
                 //viewHolder.itemView.setOnCreateContextMenuListener(viewHolder);
                 viewHolder.notesEditText.setFocusable(false);
-                viewHolder.notesEditText.setFocusableInTouchMode(false);
+                viewHolder.notesEditText.setFocusableInTouchMode(true);
+                viewHolder.notesEditText.setTextIsSelectable(true);
                 //viewHolder.notesEditText.setClickable(false);
             }
         }
