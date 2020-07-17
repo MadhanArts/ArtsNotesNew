@@ -667,9 +667,11 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             //notesContentAdapter.saveTextFile(viewHolder.notesEditText.getText().toString(), i);
             if (viewHolder != null) {
                 //viewHolder.itemView.setOnCreateContextMenuListener(viewHolder);
-                viewHolder.notesEditText.setFocusable(false);
-                viewHolder.notesEditText.setFocusableInTouchMode(true);
                 viewHolder.notesEditText.setTextIsSelectable(true);
+                viewHolder.notesEditText.setFocusable(false);
+                viewHolder.notesEditText.setFocusableInTouchMode(false);
+
+                //viewHolder.notesEditText.setEnabled(false);
                 //viewHolder.notesEditText.setClickable(false);
             }
         }

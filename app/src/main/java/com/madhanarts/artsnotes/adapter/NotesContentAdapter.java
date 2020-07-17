@@ -81,9 +81,13 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
             if (doubleTapped)
             {
+                holder.notesEditText.setTextIsSelectable(true);
                 holder.notesEditText.setFocusable(true);
                 holder.notesEditText.setFocusableInTouchMode(true);
-                holder.notesEditText.setClickable(true);
+
+                //holder.notesEditText.setClickable(true);
+                //holder.notesEditText.setEnabled(true);
+
                 NotesContentFragment.inEditMode = true;
 
             }
@@ -132,9 +136,12 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
             if (NotesContentFragment.option.equals("create_new"))
             {
+                notesEditText.setTextIsSelectable(true);
                 notesEditText.setFocusable(true);
                 notesEditText.setFocusableInTouchMode(true);
-                notesEditText.setClickable(true);
+
+                //notesEditText.setClickable(true);
+                //notesEditText.setEnabled(true);
                 doubleTapped = true;
                 NotesContentFragment.inEditMode = true;
 
@@ -168,11 +175,13 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             else if (NotesContentFragment.option.equals("get_exist"))
             {
 
+                notesEditText.setTextIsSelectable(true);
                 notesEditText.setFocusable(false);
                 notesEditText.setFocusableInTouchMode(false);
-                notesEditText.setTextIsSelectable(true);
 
                 //notesEditText.setClickable(false);
+                //notesEditText.setEnabled(false);
+
                 NotesContentFragment.inEditMode = false;
 
                 notesEditText.setOnClickListener(new DoubleClickListener() {
