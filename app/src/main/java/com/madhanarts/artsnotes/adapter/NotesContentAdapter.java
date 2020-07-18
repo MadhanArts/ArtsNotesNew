@@ -1,12 +1,14 @@
 package com.madhanarts.artsnotes.adapter;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -79,13 +81,18 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             String text = getText(position);
             holder.notesEditText.setText(text);
 
+
             if (doubleTapped)
             {
-                holder.notesEditText.setTextIsSelectable(true);
+                //holder.notesEditText.setTextIsSelectable(true);
                 holder.notesEditText.setFocusable(true);
                 holder.notesEditText.setFocusableInTouchMode(true);
 
-                //holder.notesEditText.setClickable(true);
+                holder.notesEditText.setClickable(true);
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    holder.notesEditText.setShowSoftInputOnFocus(true);
+                }
+*/
                 //holder.notesEditText.setEnabled(true);
 
                 NotesContentFragment.inEditMode = true;
@@ -127,6 +134,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             super(itemView);
 
             notesEditText = itemView.findViewById(R.id.notes_item_text);
+            notesEditText.setRawInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
             //saveTextButton = itemView.findViewById(R.id.notes_item_text_save_button);
 
             notesRecordLayout = itemView.findViewById(R.id.notes_item_record);
@@ -136,12 +144,16 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
             if (NotesContentFragment.option.equals("create_new"))
             {
-                notesEditText.setTextIsSelectable(true);
+                //notesEditText.setTextIsSelectable(true);
                 notesEditText.setFocusable(true);
                 notesEditText.setFocusableInTouchMode(true);
 
-                //notesEditText.setClickable(true);
+                notesEditText.setClickable(true);
                 //notesEditText.setEnabled(true);
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    notesEditText.setShowSoftInputOnFocus(true);
+                }
+                */
                 doubleTapped = true;
                 NotesContentFragment.inEditMode = true;
 
@@ -149,7 +161,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                     @Override
                                                     public void onSingleClick(View v) {
 
-                                                        if(notesContentFragment.inActionMode)
+                                                        if(notesContentFragment.inActionMode && !NotesContentFragment.inEditMode)
                                                         {
                                                             if (itemView != null)
                                                             {
@@ -162,7 +174,8 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                     @Override
                                                     public void onDoubleClick(View v) {
 
-                                                        if (!notesContentFragment.inActionMode){
+                                                        if (!notesContentFragment.inActionMode && !NotesContentFragment.inEditMode)
+                                                        {
                                                             doubleTapped = true;
                                                             toolbarViewChanger.changeToolbarView();
 
@@ -175,34 +188,37 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             else if (NotesContentFragment.option.equals("get_exist"))
             {
 
-                notesEditText.setTextIsSelectable(true);
+                //notesEditText.setTextIsSelectable(true);
                 notesEditText.setFocusable(false);
                 notesEditText.setFocusableInTouchMode(false);
 
-                //notesEditText.setClickable(false);
+                notesEditText.setClickable(false);
                 //notesEditText.setEnabled(false);
-
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    notesEditText.setShowSoftInputOnFocus(false);
+                }
+*/
                 NotesContentFragment.inEditMode = false;
 
                 notesEditText.setOnClickListener(new DoubleClickListener() {
                                                      @Override
                                                      public void onSingleClick(View v) {
-                                                         if(notesContentFragment.inActionMode)
+                                                         if(notesContentFragment.inActionMode && !NotesContentFragment.inEditMode)
                                                          {
                                                              if (itemView != null)
                                                              {
                                                                  notesContentFragment.selectItem(itemView, getAdapterPosition());
                                                              }
                                                          }
-                                                         Log.d("touch_event", "Single Clicked");
+                                                         //Log.d("touch_event", "Single Clicked");
                                                          //notesEditText.setFocusableInTouchMode(true);
                                                      }
 
                                                      @Override
                                                      public void onDoubleClick(View v) {
-                                                         Log.d("touch_event", "Double Clicked");
+                                                         //Log.d("touch_event", "Double Clicked");
 
-                                                         if (!notesContentFragment.inActionMode) {
+                                                         if (!notesContentFragment.inActionMode && !NotesContentFragment.inEditMode) {
                                                              doubleTapped = true;
                                                              toolbarViewChanger.changeToolbarView();
                                                              notifyDataSetChanged();
@@ -211,6 +227,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                      }
                                                  });
             }
+
 
             notesRecordLayout.setOnClickListener(new DoubleClickListener() {
                 @Override

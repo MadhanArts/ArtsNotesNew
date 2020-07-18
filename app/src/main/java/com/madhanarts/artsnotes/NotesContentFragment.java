@@ -3,6 +3,7 @@ package com.madhanarts.artsnotes;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -165,6 +166,11 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         {
             case R.id.content_action_delete:
 
+                if (noteItemsFile.size() == 0)
+                {
+                    Toast.makeText(getActivity(), "There is no File to delete", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
                 if (selectedNoteItemsFile == null)
                 {
                     selectedNoteItemsFile = new ArrayList<>();
@@ -277,7 +283,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         option = getArguments().getString("option", "create_new");
         if (option.equals("create_new"))
         {
-            noteItem = new NoteItem(0, null, new ArrayList<File>(), 0);
+            noteItem = new NoteItem(0, "", new ArrayList<File>(), 0);
             noteItemsFile = noteItem.getNotesContentPathFiles();
             getActivity().invalidateOptionsMenu();
             inEditMode = true;
@@ -338,6 +344,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             @Override
             public void onDoubleClick(View v) {
 
+                Log.d("touch_event", "double clicked toolbartextview");
                 NotesContentAdapter.doubleTapped = true;
                 inEditMode = true;
                 editViewModeToolbar();
@@ -405,7 +412,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
                 if (option.equals("create_new")) {
 
-                    if (inEditMode && noteItem.getNotesContentPathFiles().size() > 0) {
+                    if (inEditMode && (noteItemsFile.size() > 0 || !toolbarEditText.getText().toString().equals(""))) {
 
                         textViewModeToolbar();
                         textViewModeEditText();
@@ -667,12 +674,19 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             //notesContentAdapter.saveTextFile(viewHolder.notesEditText.getText().toString(), i);
             if (viewHolder != null) {
                 //viewHolder.itemView.setOnCreateContextMenuListener(viewHolder);
-                viewHolder.notesEditText.setTextIsSelectable(true);
+                //viewHolder.notesEditText.setTextIsSelectable(true);
                 viewHolder.notesEditText.setFocusable(false);
                 viewHolder.notesEditText.setFocusableInTouchMode(false);
 
                 //viewHolder.notesEditText.setEnabled(false);
-                //viewHolder.notesEditText.setClickable(false);
+                viewHolder.notesEditText.setClickable(false);
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    viewHolder.notesEditText.setShowSoftInputOnFocus(false);
+                }*/
+            }
+            else
+            {
+                Log.d("content_op", "In textView Edittext... view holder is null");
             }
         }
     }

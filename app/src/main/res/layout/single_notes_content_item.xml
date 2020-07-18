@@ -19,11 +19,15 @@
         android:minLines="1"
 
         android:visibility="visible"
+        android:cursorVisible="true"
 
         android:textIsSelectable="true"
         android:longClickable="true"
+        android:autoLink="all"
+        android:scrollHorizontally="false"
 
-        android:inputType="textMultiLine"
+        android:singleLine="false"
+
         android:background="@android:color/transparent"
 
         android:paddingStart="8dp"
@@ -34,9 +38,6 @@
         android:textSize="24sp"
 
         android:text=""
-
-        android:editable="false"
-
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
