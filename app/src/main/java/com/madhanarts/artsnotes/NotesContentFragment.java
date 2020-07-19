@@ -414,9 +414,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
                     if (inEditMode && (noteItemsFile.size() > 0 || !toolbarEditText.getText().toString().equals(""))) {
 
+                        saveNotes();
                         textViewModeToolbar();
                         textViewModeEditText();
-                        saveNotes();
                         inEditMode = false;
                         NotesContentAdapter.doubleTapped = false;
 
@@ -633,7 +633,8 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     {
         toolbarEditText.setFocusable(false);
         toolbarEditText.setFocusableInTouchMode(false);
-        toolbarEditText.setClickable(false);
+        //toolbarEditText.setClickable(false);
+        toolbarEditText.setCursorVisible(false);
         toolbarEditText.setBackground(null);
 
         toolbar.inflateMenu(R.menu.note_content_action_mode_menu);
@@ -655,7 +656,8 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
         toolbarEditText.setFocusable(true);
         toolbarEditText.setFocusableInTouchMode(true);
-        toolbarEditText.setClickable(true);
+        //toolbarEditText.setClickable(true);
+        toolbarEditText.setCursorVisible(true);
         toolbarEditText.setBackground(toolbarEditTextBack);
 
         addButton.setVisibility(View.VISIBLE);
@@ -675,11 +677,15 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             if (viewHolder != null) {
                 //viewHolder.itemView.setOnCreateContextMenuListener(viewHolder);
                 //viewHolder.notesEditText.setTextIsSelectable(true);
+                viewHolder.mKeyListener = viewHolder.notesEditText.getKeyListener();
+                viewHolder.notesEditText.setKeyListener(null);
                 viewHolder.notesEditText.setFocusable(false);
                 viewHolder.notesEditText.setFocusableInTouchMode(false);
 
                 //viewHolder.notesEditText.setEnabled(false);
-                viewHolder.notesEditText.setClickable(false);
+                //viewHolder.notesEditText.setClickable(false);
+
+                viewHolder.notesEditText.setCursorVisible(false);
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     viewHolder.notesEditText.setShowSoftInputOnFocus(false);
                 }*/

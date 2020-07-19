@@ -12,20 +12,20 @@
 
     <view
         class = "com.madhanarts.artsnotes.LinedEditText"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/notes_item_text"
 
         android:minLines="1"
 
         android:visibility="visible"
-        android:cursorVisible="true"
 
-        android:textIsSelectable="true"
-        android:longClickable="true"
+        android:inputType="textMultiLine"
         android:autoLink="all"
         android:scrollHorizontally="false"
 
+        android:textIsSelectable="true"
+        android:longClickable="true"
         android:singleLine="false"
 
         android:background="@android:color/transparent"

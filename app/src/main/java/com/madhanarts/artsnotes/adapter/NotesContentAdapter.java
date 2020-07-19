@@ -2,6 +2,7 @@ package com.madhanarts.artsnotes.adapter;
 
 import android.content.Context;
 import android.os.Build;
+import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -78,17 +79,17 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
             Log.d("content_op", notesItemFiles.get(position).getName() + " " + position);
 
-            String text = getText(position);
-            holder.notesEditText.setText(text);
-
-
             if (doubleTapped)
             {
                 //holder.notesEditText.setTextIsSelectable(true);
+                holder.notesEditText.setKeyListener(holder.mKeyListener);
                 holder.notesEditText.setFocusable(true);
                 holder.notesEditText.setFocusableInTouchMode(true);
 
-                holder.notesEditText.setClickable(true);
+                //holder.notesEditText.setClickable(true);
+                Log.d("content_op", "On bind KeyListener : " + holder.mKeyListener.toString());
+
+                holder.notesEditText.setCursorVisible(true);
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.notesEditText.setShowSoftInputOnFocus(true);
                 }
@@ -98,6 +99,11 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 NotesContentFragment.inEditMode = true;
 
             }
+
+            String text = getText(position);
+            holder.notesEditText.setText(text);
+
+
 
         }
         else if (extension.equals(".3gp"))
@@ -121,6 +127,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
     public class NotesContentViewHolder extends RecyclerView.ViewHolder {
 
         // for text layout
+        public KeyListener mKeyListener;
         public EditText notesEditText;
 
         // for recording layout
@@ -134,7 +141,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             super(itemView);
 
             notesEditText = itemView.findViewById(R.id.notes_item_text);
-            notesEditText.setRawInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+            //notesEditText.setRawInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
             //saveTextButton = itemView.findViewById(R.id.notes_item_text_save_button);
 
             notesRecordLayout = itemView.findViewById(R.id.notes_item_record);
@@ -145,10 +152,14 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             if (NotesContentFragment.option.equals("create_new"))
             {
                 //notesEditText.setTextIsSelectable(true);
+                mKeyListener = notesEditText.getKeyListener();
+                notesEditText.setKeyListener(mKeyListener);
                 notesEditText.setFocusable(true);
                 notesEditText.setFocusableInTouchMode(true);
 
-                notesEditText.setClickable(true);
+                //notesEditText.setClickable(true);
+
+                notesEditText.setCursorVisible(true);
                 //notesEditText.setEnabled(true);
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     notesEditText.setShowSoftInputOnFocus(true);
@@ -189,10 +200,16 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             {
 
                 //notesEditText.setTextIsSelectable(true);
+                mKeyListener = notesEditText.getKeyListener();
+                Log.d("content_op", "ViewHolder KeyListener : " + mKeyListener.toString());
+                notesEditText.setKeyListener(null);
                 notesEditText.setFocusable(false);
                 notesEditText.setFocusableInTouchMode(false);
 
-                notesEditText.setClickable(false);
+                //notesEditText.setClickable(false);
+
+                notesEditText.setCursorVisible(false);
+
                 //notesEditText.setEnabled(false);
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     notesEditText.setShowSoftInputOnFocus(false);
