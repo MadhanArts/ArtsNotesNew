@@ -113,6 +113,8 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                 selectedNoteItemsFile = null;
                 counter = 0;
 
+                makeEditTextFocusable();
+
             }
         });
 
@@ -173,6 +175,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                 }
                 if (selectedNoteItemsFile == null)
                 {
+                    makeEditTextNotFocusable();
                     selectedNoteItemsFile = new ArrayList<>();
                     inActionMode = true;
                     contentToolbarLayout.setVisibility(View.GONE);
@@ -225,7 +228,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
         if (noteItemsFile.get(index).delete()) {
             File file = noteItemsFile.remove(index);
-            Toast.makeText(getContext(), file.getName() + " Item deleted", Toast.LENGTH_SHORT).show();
+            Log.d("content_op", file.getName() + " Item deleted " + index);
 
             if (noteItemsFile.size() <= 0) {
                 noteItemsFile = new ArrayList<>();
@@ -241,6 +244,45 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
 
 
+    }
+
+    private void makeEditTextNotFocusable()
+    {
+        for (int i = 0; i < noteItemsFile.size(); i++)
+        {
+            NotesContentAdapter.NotesContentViewHolder viewHolder = (NotesContentAdapter.NotesContentViewHolder) notesContentRecycler.findViewHolderForAdapterPosition(i);
+
+            if (viewHolder != null)
+            {
+                viewHolder.notesEditText.setFocusable(false);
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "View Holder in makeEditTextNotFocusable is null", Toast.LENGTH_SHORT).show();
+            }
+
+
+        }
+    }
+
+    private void makeEditTextFocusable()
+    {
+        for (int i = 0; i < noteItemsFile.size(); i++)
+        {
+            NotesContentAdapter.NotesContentViewHolder viewHolder = (NotesContentAdapter.NotesContentViewHolder) notesContentRecycler.findViewHolderForAdapterPosition(i);
+
+            if (viewHolder != null) {
+                viewHolder.notesEditText.setFocusable(true);
+                viewHolder.notesEditText.setFocusableInTouchMode(true);
+                viewHolder.notesEditText.requestFocus();
+                viewHolder.notesEditText.setTextIsSelectable(true);
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "View Holder in makeEditTextFocusable is null", Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 
     public void selectItem(View itemView, int position)
@@ -454,9 +496,6 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         };
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), onBackPressedCallback);
-
-
-
 
     }
 
@@ -677,15 +716,22 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             if (viewHolder != null) {
                 //viewHolder.itemView.setOnCreateContextMenuListener(viewHolder);
                 //viewHolder.notesEditText.setTextIsSelectable(true);
+                if (viewHolder.notesEditText.getVisibility() == View.VISIBLE && !viewHolder.notesEditText.getText().toString().equals(notesContentAdapter.getText(i)))
+                {
+                    notesContentAdapter.saveTextFile(viewHolder.notesEditText.getText().toString(), i);
+                    Toast.makeText(getActivity(), "Saved in textViewModeEditText", Toast.LENGTH_SHORT).show();
+                    Log.d("content_op", "Saved in textViewModeEditText " + i);
+                }
                 viewHolder.mKeyListener = viewHolder.notesEditText.getKeyListener();
                 viewHolder.notesEditText.setKeyListener(null);
-                viewHolder.notesEditText.setFocusable(false);
-                viewHolder.notesEditText.setFocusableInTouchMode(false);
+                //viewHolder.notesEditText.setFocusable(false);
+                //viewHolder.notesEditText.setFocusableInTouchMode(false);
 
                 //viewHolder.notesEditText.setEnabled(false);
                 //viewHolder.notesEditText.setClickable(false);
 
                 viewHolder.notesEditText.setCursorVisible(false);
+
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     viewHolder.notesEditText.setShowSoftInputOnFocus(false);
                 }*/

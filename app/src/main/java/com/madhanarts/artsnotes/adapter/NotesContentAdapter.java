@@ -83,8 +83,8 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             {
                 //holder.notesEditText.setTextIsSelectable(true);
                 holder.notesEditText.setKeyListener(holder.mKeyListener);
-                holder.notesEditText.setFocusable(true);
-                holder.notesEditText.setFocusableInTouchMode(true);
+                //holder.notesEditText.setFocusable(true);
+                //holder.notesEditText.setFocusableInTouchMode(true);
 
                 //holder.notesEditText.setClickable(true);
                 Log.d("content_op", "On bind KeyListener : " + holder.mKeyListener.toString());
@@ -154,8 +154,8 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 //notesEditText.setTextIsSelectable(true);
                 mKeyListener = notesEditText.getKeyListener();
                 notesEditText.setKeyListener(mKeyListener);
-                notesEditText.setFocusable(true);
-                notesEditText.setFocusableInTouchMode(true);
+                //notesEditText.setFocusable(true);
+                //notesEditText.setFocusableInTouchMode(true);
 
                 //notesEditText.setClickable(true);
 
@@ -203,8 +203,8 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 mKeyListener = notesEditText.getKeyListener();
                 Log.d("content_op", "ViewHolder KeyListener : " + mKeyListener.toString());
                 notesEditText.setKeyListener(null);
-                notesEditText.setFocusable(false);
-                notesEditText.setFocusableInTouchMode(false);
+                //notesEditText.setFocusable(false);
+                //notesEditText.setFocusableInTouchMode(false);
 
                 //notesEditText.setClickable(false);
 
@@ -227,13 +227,13 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                                  notesContentFragment.selectItem(itemView, getAdapterPosition());
                                                              }
                                                          }
-                                                         //Log.d("touch_event", "Single Clicked");
+                                                         Log.d("touch_event", "Single Clicked");
                                                          //notesEditText.setFocusableInTouchMode(true);
                                                      }
 
                                                      @Override
                                                      public void onDoubleClick(View v) {
-                                                         //Log.d("touch_event", "Double Clicked");
+                                                         Log.d("touch_event", "Double Clicked");
 
                                                          if (!notesContentFragment.inActionMode && !NotesContentFragment.inEditMode) {
                                                              doubleTapped = true;
@@ -244,6 +244,23 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                      }
                                                  });
             }
+
+/*            notesEditText.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+
+                    if (!NotesContentFragment.inEditMode && !notesContentFragment.inActionMode)
+                    {
+                        notesEditText.setFocusable(true);
+                        notesEditText.setFocusableInTouchMode(true);
+                        notesEditText.requestFocus();
+                        notesEditText.setTextIsSelectable(true);
+                    }
+
+
+                    return true;
+                }
+            });*/
 
 
             notesRecordLayout.setOnClickListener(new DoubleClickListener() {
@@ -271,11 +288,16 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
                     if (!hasFocus)
                     {
-                        saveTextFile(notesEditText.getText().toString(), getAdapterPosition());
-                        Toast.makeText(context, "focus changed... and saved", Toast.LENGTH_SHORT).show();
-                        //notesEditText.setFocusableInTouchMode(false);
-                        //notesEditText.setClickable(false);
+                        Log.d("content_op", "Not Has focus at " + getAdapterPosition());
 
+                        if (!notesEditText.getText().toString().equals(getText(getAdapterPosition())))
+                        {
+
+                            saveTextFile(notesEditText.getText().toString(), getAdapterPosition());
+                            Toast.makeText(context, "focus changed... and saved", Toast.LENGTH_SHORT).show();
+                            //notesEditText.setFocusableInTouchMode(false);
+                            //notesEditText.setClickable(false);
+                        }
                     }
                 }
             });
@@ -289,10 +311,6 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
                 }
             });
-
-
-
-
 
 
             Log.d("content_op", "View holder class");
@@ -328,22 +346,23 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
         Scanner myFileReader = null;
         String text = "";
 
-        try {
+        if (position != -1) {
+            try {
 
-            myFileReader = new Scanner(notesItemFiles.get(position));
+                myFileReader = new Scanner(notesItemFiles.get(position));
 
-            while (myFileReader.hasNextLine())
-            {
-                text = text + myFileReader.nextLine() + "\n";
+                while (myFileReader.hasNextLine()) {
+                    text = text + myFileReader.nextLine() + "\n";
+                }
+
+                text = text.trim();
+
+                Log.d("content_op", text);
+
+                myFileReader.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
-
-            text = text.trim();
-
-            Log.d("content_op", text);
-
-            myFileReader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
 
         return text;
