@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -62,6 +63,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_notes_content_item, parent, false);
         Log.d("content_op", "On layout inflater");
 
+
         return new NotesContentViewHolder(view);
     }
 
@@ -83,6 +85,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             {
                 //holder.notesEditText.setTextIsSelectable(true);
                 holder.notesEditText.setKeyListener(holder.mKeyListener);
+                holder.notesEditText.setOnFocusChangeListener(holder.mFocusChangeListener);
                 //holder.notesEditText.setFocusable(true);
                 //holder.notesEditText.setFocusableInTouchMode(true);
 
@@ -129,6 +132,8 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
         // for text layout
         public KeyListener mKeyListener;
         public EditText notesEditText;
+        public View.OnTouchListener mOnTouchListener;
+        public View.OnFocusChangeListener mFocusChangeListener;
 
         // for recording layout
         public ConstraintLayout notesRecordLayout;
@@ -149,6 +154,115 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             notesRecordSeekBar = itemView.findViewById(R.id.notes_item_record_seekbar);
             notesRecordTimer = itemView.findViewById(R.id.notes_item_record_seekbar_timer);
 
+            final GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.OnGestureListener() {
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public void onShowPress(MotionEvent e) {
+
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                    return false;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+
+                }
+
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    return false;
+                }
+            });
+
+            gestureDetector.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public boolean onDoubleTapEvent(MotionEvent e) {
+                    return false;
+                }
+            });
+
+            gestureDetector.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent e) {
+                    if(notesContentFragment.inActionMode && !NotesContentFragment.inEditMode)
+                    {
+                        if (itemView != null)
+                        {
+                            notesContentFragment.selectItem(itemView, getAdapterPosition());
+                        }
+                    }
+                    return false;
+                }
+
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+
+                    if (!notesContentFragment.inActionMode && !NotesContentFragment.inEditMode)
+                    {
+                        doubleTapped = true;
+                        toolbarViewChanger.changeToolbarView();
+
+                        notifyDataSetChanged();
+                    }
+                    return false;
+                }
+
+                @Override
+                public boolean onDoubleTapEvent(MotionEvent e) {
+                    return false;
+                }
+            });
+
+            mOnTouchListener = new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    gestureDetector.onTouchEvent(event);
+                    return false;
+                }
+            };
+
+            mFocusChangeListener = new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+
+                    if (!hasFocus)
+                    {
+                        Log.d("content_op", "Not Has focus at " + getAdapterPosition());
+
+                        if (!notesEditText.getText().toString().equals(getText(getAdapterPosition())))
+                        {
+
+                            saveTextFile(notesEditText.getText().toString(), getAdapterPosition());
+                            Toast.makeText(context, "focus changed... and saved", Toast.LENGTH_SHORT).show();
+                            //notesEditText.setFocusableInTouchMode(false);
+                            //notesEditText.setClickable(false);
+                        }
+                    }
+                }
+            };
+
             if (NotesContentFragment.option.equals("create_new"))
             {
                 //notesEditText.setTextIsSelectable(true);
@@ -168,7 +282,11 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 doubleTapped = true;
                 NotesContentFragment.inEditMode = true;
 
-                notesEditText.setOnClickListener(new DoubleClickListener() {
+                notesEditText.setOnTouchListener(mOnTouchListener);
+                notesEditText.setOnFocusChangeListener(mFocusChangeListener);
+
+
+/*                notesEditText.setOnClickListener(new DoubleClickListener() {
                                                     @Override
                                                     public void onSingleClick(View v) {
 
@@ -194,7 +312,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                         }
 
                                                     }
-                                                });
+                                                });*/
             }
             else if (NotesContentFragment.option.equals("get_exist"))
             {
@@ -217,6 +335,11 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 */
                 NotesContentFragment.inEditMode = false;
 
+                notesEditText.setOnTouchListener(mOnTouchListener);
+                notesEditText.setOnFocusChangeListener(null);
+
+
+/*
                 notesEditText.setOnClickListener(new DoubleClickListener() {
                                                      @Override
                                                      public void onSingleClick(View v) {
@@ -242,7 +365,8 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                                                          }
 
                                                      }
-                                                 });
+                                                 });*/
+
             }
 
 /*            notesEditText.setOnLongClickListener(new View.OnLongClickListener() {
@@ -278,27 +402,6 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 @Override
                 public void onDoubleClick(View v) {
 
-                }
-            });
-
-
-            notesEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-
-                    if (!hasFocus)
-                    {
-                        Log.d("content_op", "Not Has focus at " + getAdapterPosition());
-
-                        if (!notesEditText.getText().toString().equals(getText(getAdapterPosition())))
-                        {
-
-                            saveTextFile(notesEditText.getText().toString(), getAdapterPosition());
-                            Toast.makeText(context, "focus changed... and saved", Toast.LENGTH_SHORT).show();
-                            //notesEditText.setFocusableInTouchMode(false);
-                            //notesEditText.setClickable(false);
-                        }
-                    }
                 }
             });
 

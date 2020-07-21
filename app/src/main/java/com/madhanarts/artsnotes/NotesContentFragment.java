@@ -113,7 +113,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                 selectedNoteItemsFile = null;
                 counter = 0;
 
-                makeEditTextFocusable();
+                //makeEditTextFocusable();
 
             }
         });
@@ -175,7 +175,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                 }
                 if (selectedNoteItemsFile == null)
                 {
-                    makeEditTextNotFocusable();
+                    //makeEditTextNotFocusable();
                     selectedNoteItemsFile = new ArrayList<>();
                     inActionMode = true;
                     contentToolbarLayout.setVisibility(View.GONE);
@@ -246,7 +246,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
     }
 
-    private void makeEditTextNotFocusable()
+/*    private void makeEditTextNotFocusable()
     {
         for (int i = 0; i < noteItemsFile.size(); i++)
         {
@@ -263,9 +263,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
 
         }
-    }
+    }*/
 
-    private void makeEditTextFocusable()
+    /*private void makeEditTextFocusable()
     {
         for (int i = 0; i < noteItemsFile.size(); i++)
         {
@@ -283,7 +283,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             }
 
         }
-    }
+    }*/
 
     public void selectItem(View itemView, int position)
     {
@@ -456,9 +456,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
                     if (inEditMode && (noteItemsFile.size() > 0 || !toolbarEditText.getText().toString().equals(""))) {
 
-                        saveNotes();
                         textViewModeToolbar();
                         textViewModeEditText();
+                        saveNotes();
                         inEditMode = false;
                         NotesContentAdapter.doubleTapped = false;
 
@@ -724,6 +724,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                 }
                 viewHolder.mKeyListener = viewHolder.notesEditText.getKeyListener();
                 viewHolder.notesEditText.setKeyListener(null);
+                viewHolder.notesEditText.setOnFocusChangeListener(null);
                 //viewHolder.notesEditText.setFocusable(false);
                 //viewHolder.notesEditText.setFocusableInTouchMode(false);
 
@@ -781,7 +782,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
             option = "get_exist";
 
-            //Toast.makeText(getActivity(), "Saved", Toast.LENGTH_SHORT).show();
+            Log.d("content_op", "create_new Executed... Note added");
 
         }
         else if (option.equals("get_exist"))
@@ -817,8 +818,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             BackgroundTask backgroundTask = new BackgroundTask(getActivity());
             backgroundTask.execute("update_notes", Integer.toString(noteItem.getNoteId()), noteTitle, notesFilePath, Long.toString(notesLastModified));
 
-            //Toast.makeText(getActivity(), "Updated", Toast.LENGTH_SHORT).show();
-
+            Log.d("content_op", "get_exist is executed... Note Updated");
         }
 
 
