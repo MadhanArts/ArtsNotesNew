@@ -25,10 +25,19 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
     private ArrayList<NoteItem> noteItems = new ArrayList<>();
     private NotesTitleAdapter.OnNotesTitleClickListener titleClickListener;
     private NotesTitleFragment.BackgroundTaskCompleteListener backgroundTaskCompleteListener;
+    private NotesContentFragment.BackgroundTaskNoteIdListener backgroundTaskNoteIdListener;
+
+    private long noteId = 0;
 
     public BackgroundTask(Context context)
     {
         this.context = context;
+    }
+
+    public BackgroundTask(Context context, NotesContentFragment.BackgroundTaskNoteIdListener backgroundTaskNoteIdListener)
+    {
+        this.context = context;
+        this.backgroundTaskNoteIdListener = backgroundTaskNoteIdListener;
 
     }
 
@@ -71,10 +80,10 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
             String noteFilePath = params[2];
             String noteLastModified = params[3];
 
-            notesDbOpener.addNewNote(noteTitle, noteFilePath, noteLastModified, database);
+            noteId = notesDbOpener.addNewNote(noteTitle, noteFilePath, noteLastModified, database);
 
             notesDbOpener.close();
-            return "Notes added successfully";
+            return "add_note";
 
         }
         else if (params[0].equals("get_notes"))
@@ -182,6 +191,10 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
 
         Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
 
+        if (result.equals("add_note"))
+        {
+            backgroundTaskNoteIdListener.sendAddedNoteId(noteId);
+        }
         if (result.equals("get_contacts"))
         {
             backgroundTaskCompleteListener.onTaskComplete(titleAdapter);

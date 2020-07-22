@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 
 public class NotesDbOpener extends SQLiteOpenHelper {
@@ -43,7 +44,7 @@ public class NotesDbOpener extends SQLiteOpenHelper {
     }
 
 
-    public void addNewNote(String noteTitle, String notePath, String noteLastModified, SQLiteDatabase database)
+    public long addNewNote(String noteTitle, String notePath, String noteLastModified, SQLiteDatabase database)
     {
         ContentValues notesValues = new ContentValues();
 
@@ -51,7 +52,8 @@ public class NotesDbOpener extends SQLiteOpenHelper {
         notesValues.put(NotesContract.NotesEntry.NOTES_FILE_PATH, notePath);
         notesValues.put(NotesContract.NotesEntry.NOTES_LAST_MODIFIED, noteLastModified);
 
-        database.insert(NotesContract.NotesEntry.TABLE_NAME, null, notesValues);
+        //Log.d("content_op", noteId + " is inserted");
+        return database.insert(NotesContract.NotesEntry.TABLE_NAME, null, notesValues);
     }
 
     public Cursor getNotes(SQLiteDatabase database)
@@ -66,11 +68,9 @@ public class NotesDbOpener extends SQLiteOpenHelper {
 
         };
 
-        Cursor cursor = database.query(NotesContract.NotesEntry.TABLE_NAME, projections,
+        return database.query(NotesContract.NotesEntry.TABLE_NAME, projections,
                 null, null, null, null, NotesContract.NotesEntry.NOTES_LAST_MODIFIED + " DESC"
         );
-
-        return cursor;
 
     }
 

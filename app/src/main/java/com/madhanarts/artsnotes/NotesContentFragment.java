@@ -459,6 +459,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                         textViewModeToolbar();
                         textViewModeEditText();
                         saveNotes();
+
                         inEditMode = false;
                         NotesContentAdapter.doubleTapped = false;
 
@@ -777,7 +778,12 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
             Log.d("notes_files", notesFilePath);
 
-            BackgroundTask backgroundTask = new BackgroundTask(getActivity());
+            BackgroundTask backgroundTask = new BackgroundTask(getActivity(), new BackgroundTaskNoteIdListener() {
+                @Override
+                public void sendAddedNoteId(long noteId) {
+                    noteItem.setNoteId((int) noteId);
+                }
+            });
             backgroundTask.execute("add_new_note", noteTitle, notesFilePath, Long.toString(notesLastModified));
 
             option = "get_exist";
@@ -937,4 +943,10 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         }
 
     }
+
+    public interface BackgroundTaskNoteIdListener
+    {
+        void sendAddedNoteId(long noteId);
+    }
+
 }
