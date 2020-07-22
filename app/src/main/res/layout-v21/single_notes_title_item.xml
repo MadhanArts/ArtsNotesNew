@@ -9,6 +9,8 @@
     android:background="@drawable/notes_item_bg"
     android:clickable="true"
 
+    android:elevation="4dp"
+
     android:focusable="true">
 
     <LinearLayout
