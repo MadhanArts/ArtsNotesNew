@@ -7,7 +7,7 @@
     android:background="@color/colorPrimaryDark"
     android:elevation="4dp"
 
-    app:contentInsetStart="0dp"
+
 
     android:id="@+id/toolbar_layout"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"

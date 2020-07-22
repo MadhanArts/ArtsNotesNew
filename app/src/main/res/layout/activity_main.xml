@@ -7,13 +7,12 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.fragment.app.FragmentContainerView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
         android:id="@+id/fragment_container"
-        android:name="com.madhanarts.artsnotes.NotesTitleFragment"
-        tools:layout="@layout/fragment_notes_title" />
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

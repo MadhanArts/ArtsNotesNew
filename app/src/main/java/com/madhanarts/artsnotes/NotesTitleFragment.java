@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,12 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
     public boolean inActionMode = false;
     private int counter = 0;
 
+    private AppCompatActivity activity;
+
+    public NotesTitleFragment(AppCompatActivity activity)
+    {
+        this.activity = activity;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,8 +57,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         View view = inflater.inflate(R.layout.fragment_notes_title, container, false);
 
         toolbar = view.findViewById(R.id.toolbar_layout);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
+        activity.setSupportActionBar(toolbar);
 
         toolbarBackButton = view.findViewById(R.id.toolbar_action_back_button);
         toolbarTextView = view.findViewById(R.id.toolbar_action_text_view);
@@ -82,7 +88,9 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         {
             int index = notesTitleAdapter.getNoteItems().indexOf(selectedNoteItems.get(i));
             NotesTitleAdapter.NotesTitleViewHolder holder = (NotesTitleAdapter.NotesTitleViewHolder) notesTitlesRecycler.findViewHolderForAdapterPosition(index);
-            holder.itemView.setBackgroundResource(R.drawable.notes_item_bg);
+            if (holder != null) {
+                holder.itemView.setBackgroundResource(R.drawable.notes_item_bg);
+            }
         }
     }
 
@@ -109,11 +117,11 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         {
             case R.id.menu_add_icon:
 
-                NotesContentFragment contentFragment = new NotesContentFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("option", "create_new");
-                contentFragment.setArguments(bundle);
-                getActivity().getSupportFragmentManager()
+                NotesContentFragment contentFragment = new NotesContentFragment(activity, "create_new", null);
+                //Bundle bundle = new Bundle();
+                //bundle.putString("option", "create_new");
+                //contentFragment.setArguments(bundle);
+                activity.getSupportFragmentManager()
                         .beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container, contentFragment)
@@ -207,8 +215,6 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
             updateToolbarTextView(counter);
             inActionMode = true;
 
-
-
         }
     }
 
@@ -255,17 +261,18 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
     @Override
     public void onClickTitle(NoteItem noteItem, int position) {
 
-        NotesContentFragment contentFragment = new NotesContentFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("option", "get_exist");
-        bundle.putSerializable("notes_Obj", noteItem);
+        NotesContentFragment contentFragment = new NotesContentFragment(activity, "get_exist", noteItem);
+        //Bundle bundle = new Bundle();
+        //bundle.putString("option", "get_exist");
+        //bundle.putSerializable("notes_Obj", noteItem);
 
 
 /*        bundle.putString("note_title", noteTitle);
         bundle.putLong("note_last_modified", lastModified);*/
-        contentFragment.setArguments(bundle);
+        //contentFragment.setArguments(bundle);
 
-        getActivity().getSupportFragmentManager()
+
+        activity.getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(null)
                 .replace(R.id.fragment_container, contentFragment)

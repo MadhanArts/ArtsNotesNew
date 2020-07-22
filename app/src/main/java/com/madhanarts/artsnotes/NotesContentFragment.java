@@ -83,6 +83,14 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     public boolean inActionMode = false;
     private int counter = 0;
 
+    private AppCompatActivity activity;
+
+    public NotesContentFragment(AppCompatActivity activity, String option, NoteItem noteItem)
+    {
+        this.activity = activity;
+        NotesContentFragment.option = option;
+        this.noteItem = noteItem;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,7 +100,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         View view = inflater.inflate(R.layout.fragment_notes_content, container, false);
 
         toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        activity.setSupportActionBar(toolbar);
 
         contentToolbarLayout = view.findViewById(R.id.content_toolbar_layout);
         contentToolbarActionModeLayout = view.findViewById(R.id.content_action_toolbar_layout);
@@ -128,7 +136,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         {
             int index = noteItemsFile.indexOf(selectedNoteItemsFile.get(i));
             NotesContentAdapter.NotesContentViewHolder holder = (NotesContentAdapter.NotesContentViewHolder) notesContentRecycler.findViewHolderForAdapterPosition(index);
-            holder.itemView.setBackgroundResource(R.drawable.notes_item_bg);
+            if (holder != null) {
+                holder.itemView.setBackgroundResource(R.drawable.notes_item_bg);
+            }
         }
     }
 
@@ -322,19 +332,22 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         toolbarEditTextBack = toolbarEditText.getBackground();
 
 
-        option = getArguments().getString("option", "create_new");
+        //option = getArguments().getString("option", "create_new");
         if (option.equals("create_new"))
         {
-            noteItem = new NoteItem(0, "", new ArrayList<File>(), 0);
+            if (noteItem == null)
+            {
+                noteItem = new NoteItem(0, "", new ArrayList<File>(), 0);
+            }
             noteItemsFile = noteItem.getNotesContentPathFiles();
-            getActivity().invalidateOptionsMenu();
+            activity.invalidateOptionsMenu();
             inEditMode = true;
 
         }
         else if(option.equals("get_exist"))
         {
 
-            noteItem = (NoteItem) getArguments().getSerializable("notes_Obj");
+            //noteItem = (NoteItem) getArguments().getSerializable("notes_Obj");
             if (noteItem != null) {
                 if (noteItem.getNotesContentPathFiles() != null && noteItem.getNotesContentPathFiles().size() > 0)
                 {
@@ -400,7 +413,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             @Override
             public void onClick(View v) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
                 addOptionSelected = menuOptions[0].toString();
 
@@ -465,7 +478,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
                     } else {
                         this.setEnabled(false);
-                        getActivity().getSupportFragmentManager().popBackStackImmediate();
+                        activity.getSupportFragmentManager().popBackStackImmediate();
 
                     }
                 }
@@ -489,7 +502,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                     }
                     else {
                         this.setEnabled(false);
-                        getActivity().getSupportFragmentManager().popBackStackImmediate();
+                        activity.getSupportFragmentManager().popBackStackImmediate();
 
                     }
                 }
@@ -501,7 +514,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     }
 
     private void addTextNote() {
-        String filesPathDir = getActivity().getExternalFilesDir("/").getAbsolutePath();
+        String filesPathDir = activity.getExternalFilesDir("/").getAbsolutePath();
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyy_MM_dd_hh_mm_ss", Locale.CANADA);
         Date now = new Date();
@@ -567,7 +580,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
         timeWhenStopped = viewHolder.notesRecordTimer.getBase() - SystemClock.elapsedRealtime();
         viewHolder.notesRecordTimer.stop();
-        viewHolder.notesRecordPlayButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.notes_record_list_play_btn));
+        viewHolder.notesRecordPlayButton.setImageDrawable(activity.getResources().getDrawable(R.drawable.notes_record_list_play_btn));
         isPlaying = false;
         seekBarHandler.removeCallbacks(updateSeekBar);
     }
@@ -575,7 +588,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     private void resumeAudio()
     {
         mediaPlayer.start();
-        viewHolder.notesRecordPlayButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.notes_record_list_pause_btn));
+        viewHolder.notesRecordPlayButton.setImageDrawable(activity.getResources().getDrawable(R.drawable.notes_record_list_pause_btn));
 
         viewHolder.notesRecordTimer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
         viewHolder.notesRecordTimer.start();
@@ -596,7 +609,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         viewHolder.notesRecordTimer.setBase(SystemClock.elapsedRealtime());
         viewHolder.notesRecordTimer.stop();
 
-        viewHolder.notesRecordPlayButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.notes_record_list_play_btn));
+        viewHolder.notesRecordPlayButton.setImageDrawable(activity.getResources().getDrawable(R.drawable.notes_record_list_play_btn));
         viewHolder.notesRecordSeekBar.setProgress(0);
         isPlaying = false;
         isPlayerCompleted = true;
@@ -621,7 +634,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             e.printStackTrace();
         }
 
-        viewHolder.notesRecordPlayButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.notes_record_list_pause_btn));
+        viewHolder.notesRecordPlayButton.setImageDrawable(activity.getResources().getDrawable(R.drawable.notes_record_list_pause_btn));
 
 
         isPlaying = true;
@@ -660,7 +673,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             public void run() {
 
                 viewHolder.notesRecordSeekBar.setProgress(mediaPlayer.getCurrentPosition());
-                //updates the seekbar by calling updateseekbar at 500 millis
+                //updates the seek bar by calling updateSeekBar at 500 millis
                 seekBarHandler.postDelayed(this, 500);
 
             }
@@ -682,7 +695,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         addButton.setVisibility(View.GONE);
 
 
-        Toast.makeText(getContext(), "Changed to text view", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Changed to text view", Toast.LENGTH_SHORT).show();
 
 
         Log.d("content_op", "converted to textview");
@@ -755,7 +768,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                 noteTitle = "Notes ";
             }
 
-            String notesFilePath = "";
+            StringBuilder notesFilePath = new StringBuilder();
 
             long notesLastModified;
             if (noteItemsFile.size() > 0) {
@@ -769,14 +782,14 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
 
             for (int i = 0; i < noteItemsFile.size(); i++) {
-                notesFilePath = notesFilePath + noteItemsFile.get(i).getAbsolutePath() + "%%";
+                notesFilePath.append(noteItemsFile.get(i).getAbsolutePath()).append("%%");
                 if (noteItemsFile.get(i).lastModified() > notesLastModified) {
                     notesLastModified = noteItemsFile.get(i).lastModified();
                 }
 
             }
 
-            Log.d("notes_files", notesFilePath);
+            Log.d("notes_files", notesFilePath.toString());
 
             BackgroundTask backgroundTask = new BackgroundTask(getActivity(), new BackgroundTaskNoteIdListener() {
                 @Override
@@ -784,7 +797,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                     noteItem.setNoteId((int) noteId);
                 }
             });
-            backgroundTask.execute("add_new_note", noteTitle, notesFilePath, Long.toString(notesLastModified));
+            backgroundTask.execute("add_new_note", noteTitle, notesFilePath.toString(), Long.toString(notesLastModified));
 
             option = "get_exist";
 
@@ -796,7 +809,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
             String noteTitle = toolbarEditText.getText().toString();
 
-            String notesFilePath = "";
+            StringBuilder notesFilePath = new StringBuilder();
 
             long notesLastModified = 0;
 
@@ -812,17 +825,17 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
 
             for (int i = 0; i < noteItemsFile.size(); i++) {
-                notesFilePath = notesFilePath + noteItemsFile.get(i).getAbsolutePath() + "%%";
+                notesFilePath.append(noteItemsFile.get(i).getAbsolutePath()).append("%%");
                 if (noteItemsFile.get(i).lastModified() > notesLastModified) {
                     notesLastModified = noteItemsFile.get(i).lastModified();
                 }
 
             }
 
-            Log.d("notes_files", notesFilePath);
+            Log.d("notes_files", notesFilePath.toString());
 
             BackgroundTask backgroundTask = new BackgroundTask(getActivity());
-            backgroundTask.execute("update_notes", Integer.toString(noteItem.getNoteId()), noteTitle, notesFilePath, Long.toString(notesLastModified));
+            backgroundTask.execute("update_notes", Integer.toString(noteItem.getNoteId()), noteTitle, notesFilePath.toString(), Long.toString(notesLastModified));
 
             Log.d("content_op", "get_exist is executed... Note Updated");
         }
