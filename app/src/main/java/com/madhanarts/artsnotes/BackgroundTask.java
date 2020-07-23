@@ -3,7 +3,6 @@ package com.madhanarts.artsnotes;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -20,10 +19,8 @@ import java.util.ArrayList;
 public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
 
     private Context context;
-    private RecyclerView titleRecyclerView;
     private NotesTitleAdapter titleAdapter;
     private ArrayList<NoteItem> noteItems = new ArrayList<>();
-    private NotesTitleAdapter.OnNotesTitleClickListener titleClickListener;
     private NotesTitleFragment.BackgroundTaskCompleteListener backgroundTaskCompleteListener;
     private NotesContentFragment.BackgroundTaskNoteIdListener backgroundTaskNoteIdListener;
 
@@ -44,8 +41,6 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
     public BackgroundTask(Context context, NotesTitleFragment notesTitleFragment, RecyclerView titleRecyclerView, NotesTitleAdapter.OnNotesTitleClickListener titleClickListener, NotesTitleFragment.BackgroundTaskCompleteListener backgroundTaskCompleteListener)
     {
         this.context = context;
-        this.titleRecyclerView = titleRecyclerView;
-        this.titleClickListener = titleClickListener;
         this.backgroundTaskCompleteListener = backgroundTaskCompleteListener;
         titleAdapter = new NotesTitleAdapter(notesTitleFragment, noteItems, titleClickListener);
         titleRecyclerView.setAdapter(titleAdapter);
@@ -55,7 +50,6 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
     public BackgroundTask(Context context, RecyclerView titleRecyclerView)
     {
         this.context = context;
-        this.titleRecyclerView = titleRecyclerView;
         titleAdapter = (NotesTitleAdapter) titleRecyclerView.getAdapter();
 
     }
@@ -68,45 +62,43 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
     @Override
     protected String doInBackground(String... params) {
 
-        if (params[0].equals("add_new_note"))
-        {
+        switch (params[0]) {
+            case "add_new_note": {
 
-            NotesDbOpener notesDbOpener = new NotesDbOpener(context);
+                NotesDbOpener notesDbOpener = new NotesDbOpener(context);
 
-            SQLiteDatabase database = notesDbOpener.getWritableDatabase();
-
-
-            String noteTitle = params[1];
-            String noteFilePath = params[2];
-            String noteLastModified = params[3];
-
-            noteId = notesDbOpener.addNewNote(noteTitle, noteFilePath, noteLastModified, database);
-
-            notesDbOpener.close();
-            return "add_note";
-
-        }
-        else if (params[0].equals("get_notes"))
-        {
-
-            //Should not set the value of view in doInBackground()
-            // doInBackground() will run in separate thread... View can only be initialized in main thread
+                SQLiteDatabase database = notesDbOpener.getWritableDatabase();
 
 
-            NotesDbOpener notesDbOpener = new NotesDbOpener(context);
+                String noteTitle = params[1];
+                String noteFilePath = params[2];
+                String noteLastModified = params[3];
 
-            SQLiteDatabase database = notesDbOpener.getReadableDatabase();
+                noteId = notesDbOpener.addNewNote(noteTitle, noteFilePath, noteLastModified, database);
 
-            Cursor cursor = notesDbOpener.getNotes(database);
+                notesDbOpener.close();
+                return "add_note";
 
-            while (cursor.moveToNext())
-            {
-                String noteId = Integer.toString(cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_ID)));
-                String noteTitle = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTE_TITLE));
-                String noteFilepath = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_FILE_PATH));
-                String noteLastModified = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_LAST_MODIFIED));
+            }
+            case "get_notes": {
 
-                ArrayList<File> noteContentPathFiles;
+                //Should not set the value of view in doInBackground()
+                // doInBackground() will run in separate thread... View can only be initialized in main thread
+
+
+                NotesDbOpener notesDbOpener = new NotesDbOpener(context);
+
+                SQLiteDatabase database = notesDbOpener.getReadableDatabase();
+
+                Cursor cursor = notesDbOpener.getNotes(database);
+
+                while (cursor.moveToNext()) {
+                    String noteId = Integer.toString(cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_ID)));
+                    String noteTitle = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTE_TITLE));
+                    String noteFilepath = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_FILE_PATH));
+                    String noteLastModified = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_LAST_MODIFIED));
+
+                    ArrayList<File> noteContentPathFiles;
 /*                if (noteFilepath.equals(""))
                 {
                     noteContentPathFiles = new ArrayList<>();
@@ -116,62 +108,61 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
                     noteContentPathFiles = convertPathToFiles(noteFilepath);
                 }*/
 
-                noteContentPathFiles = convertPathToFiles(noteFilepath);
+                    noteContentPathFiles = convertPathToFiles(noteFilepath);
 
-                NoteItem noteItem = new NoteItem(Integer.parseInt(noteId), noteTitle, noteContentPathFiles, Long.parseLong(noteLastModified));
+                    NoteItem noteItem = new NoteItem(Integer.parseInt(noteId), noteTitle, noteContentPathFiles, Long.parseLong(noteLastModified));
 
-                publishProgress(noteItem);
+                    publishProgress(noteItem);
+
+                }
+
+                notesDbOpener.close();
+                cursor.close();
+
+                return "get_contacts";
 
             }
+            case "update_notes": {
 
-            notesDbOpener.close();
-            cursor.close();
+                NotesDbOpener notesDbOpener = new NotesDbOpener(context);
 
-            return "get_contacts";
+                SQLiteDatabase database = notesDbOpener.getWritableDatabase();
 
-        }
-        else if (params[0].equals("update_notes"))
-        {
+                String notesId = params[1];
+                String notesTitle = params[2];
+                String notesFilePath = params[3];
+                String notesLastModified = params[4];
 
-            NotesDbOpener notesDbOpener = new NotesDbOpener(context);
+                notesDbOpener.updateNotes(Integer.parseInt(notesId), notesTitle, notesFilePath, notesLastModified, database);
 
-            SQLiteDatabase database = notesDbOpener.getWritableDatabase();
+                notesDbOpener.close();
 
-            String notesId = params[1];
-            String notesTitle = params[2];
-            String notesFilePath = params[3];
-            String notesLastModified = params[4];
-
-            notesDbOpener.updateNotes(Integer.parseInt(notesId), notesTitle, notesFilePath, notesLastModified, database);
-
-            notesDbOpener.close();
-
-            return "Contact updated";
+                return "Contact updated";
 
 
-        }
-        else if(params[0].equals("delete_note"))
-        {
+            }
+            case "delete_note": {
 
-            NotesDbOpener notesDbOpener = new NotesDbOpener(context);
+                NotesDbOpener notesDbOpener = new NotesDbOpener(context);
 
-            SQLiteDatabase database = notesDbOpener.getWritableDatabase();
+                SQLiteDatabase database = notesDbOpener.getWritableDatabase();
 
-            int position = Integer.parseInt(params[1]);
+                int position = Integer.parseInt(params[1]);
 
-            NoteItem noteItem = titleAdapter.getNoteItems().get(position);
-            ArrayList<File> noteItemFiles = noteItem.getNotesContentPathFiles();
-            deleteNoteItemFiles(noteItemFiles);
-            int noteId = noteItem.getNoteId();
+                NoteItem noteItem = titleAdapter.getNoteItems().get(position);
+                ArrayList<File> noteItemFiles = noteItem.getNotesContentPathFiles();
+                deleteNoteItemFiles(noteItemFiles);
+                int noteId = noteItem.getNoteId();
 
-            notesDbOpener.deleteNote(noteId, database);
+                notesDbOpener.deleteNote(noteId, database);
 
 
-            titleAdapter.getNoteItems().remove(position);
+                titleAdapter.getNoteItems().remove(position);
 
-            notesDbOpener.close();
+                notesDbOpener.close();
 
-            return "note_deleted";
+                return "note_deleted";
+            }
         }
 
         return null;
