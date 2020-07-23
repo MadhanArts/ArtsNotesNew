@@ -2,6 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/content_action_edit"
+        android:title="Edit"
+        android:icon="@drawable/ic_edit"
+        app:showAsAction="always"
+
+        />
     <item android:id="@+id/content_action_delete"
         android:title="delete"
         android:icon="@drawable/ic_menu_delete"

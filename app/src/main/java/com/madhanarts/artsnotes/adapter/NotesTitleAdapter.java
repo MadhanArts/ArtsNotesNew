@@ -1,7 +1,6 @@
 package com.madhanarts.artsnotes.adapter;
 
 import android.os.Build;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

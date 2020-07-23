@@ -3,10 +3,10 @@ package com.madhanarts.artsnotes;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,7 +32,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.madhanarts.artsnotes.adapter.NotesContentAdapter;
-import com.madhanarts.artsnotes.adapter.NotesTitleAdapter;
 import com.madhanarts.artsnotes.model.NoteItem;
 
 import java.io.File;
@@ -45,6 +44,7 @@ import java.util.Locale;
 
 public class NotesContentFragment extends Fragment implements NotesContentAdapter.ToolbarViewChanger, RecordDialog.RecordDialogListener, NotesContentAdapter.PlayButtonListener {
 
+    public TextView contentNoteModeInfo;
     private RecyclerView notesContentRecycler;
     private NotesContentAdapter notesContentAdapter;
 
@@ -176,6 +176,13 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
         switch (item.getItemId())
         {
+            case R.id.content_action_edit:
+                NotesContentAdapter.doubleTapped = true;
+                inEditMode = true;
+                editViewModeToolbar();
+                notesContentAdapter.notifyDataSetChanged();
+                return true;
+
             case R.id.content_action_delete:
 
                 if (noteItemsFile.size() == 0)
@@ -325,7 +332,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        contentNoteModeInfo = view.findViewById(R.id.content_mode_info);
         notesContentRecycler = view.findViewById(R.id.notes_content_recycler);
         addButton = view.findViewById(R.id.notes_content_add_button);
         toolbarEditText = view.findViewById(R.id.toolbar_edittext);
@@ -444,7 +451,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
                             recordDialog.setTargetFragment(NotesContentFragment.this, 11);
 
-                            recordDialog.show(getFragmentManager(), "rename_tag");
+                            recordDialog.show(activity.getSupportFragmentManager(), "rename_tag");
 
 
                             Toast.makeText(getContext(), addOptionSelected + " is selected", Toast.LENGTH_SHORT).show();
@@ -746,6 +753,16 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                 //viewHolder.notesEditText.setClickable(false);
 
                 viewHolder.notesEditText.setCursorVisible(false);
+                viewHolder.notesEditText.setAutoLinkMask(Linkify.ALL);
+                viewHolder.notesEditText.setLinksClickable(true);
+
+                String tempText = viewHolder.notesEditText.getText().toString();
+
+                if (!tempText.equals("")) {
+                    viewHolder.notesEditText.setText(tempText);
+                }
+
+                contentNoteModeInfo.setText("Non Edit Mode");
 
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     viewHolder.notesEditText.setShowSoftInputOnFocus(false);
@@ -811,7 +828,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
 
             StringBuilder notesFilePath = new StringBuilder();
 
-            long notesLastModified = 0;
+            long notesLastModified;
 
             if (noteItemsFile.size() > 0)
             {

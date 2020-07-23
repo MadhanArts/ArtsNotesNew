@@ -2,12 +2,13 @@ package com.madhanarts.artsnotes;
 
 import android.content.Context;
 import android.graphics.Canvas;
+
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
 public class LinedEditText extends androidx.appcompat.widget.AppCompatEditText {
 
-    private Paint mPaint = new Paint();
+    Paint mPaint = new Paint();
 
     public LinedEditText(Context context) {
         super(context);
@@ -19,23 +20,20 @@ public class LinedEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     public LinedEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initPaint();
-    }
-
-    private void initPaint()
-    {
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setColor(0x80000000);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
 
-        int left = getLeft();
+        mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        //mPaint.setColor(Color.parseColor("#FFE600"));
+        mPaint.setStrokeWidth(2);
+
+        //int left = getLeft();
         int right = getRight();
         int paddingTop = getPaddingTop();
-        int paddingBottom = getPaddingBottom();
-        int paddingLeft = 0;
+        //int paddingBottom = getPaddingBottom();
+        int paddingLeft;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
             paddingLeft = getPaddingStart();
         }
@@ -43,7 +41,7 @@ public class LinedEditText extends androidx.appcompat.widget.AppCompatEditText {
         {
             paddingLeft = getPaddingLeft();
         }
-        int paddingRight = 0;
+        int paddingRight;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
             paddingRight = getPaddingEnd();
         }
@@ -51,7 +49,7 @@ public class LinedEditText extends androidx.appcompat.widget.AppCompatEditText {
         {
             paddingRight = getPaddingRight();
         }
-        int height = getHeight();
+        //int height = getHeight();
         int lineHeight = getLineHeight();
         int count = getLineCount();
 

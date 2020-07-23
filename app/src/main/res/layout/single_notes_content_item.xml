@@ -10,8 +10,7 @@
     android:elevation="3dp"
     >
 
-    <view
-        class = "com.madhanarts.artsnotes.LinedEditText"
+    <com.madhanarts.artsnotes.LinedEditText
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/notes_item_text"
@@ -20,7 +19,7 @@
 
         android:visibility="visible"
 
-        android:inputType="textMultiLine"
+        android:inputType="textMultiLine|textNoSuggestions"
         android:autoLink="all"
         android:scrollHorizontally="false"
 
@@ -28,7 +27,8 @@
         android:longClickable="true"
         android:singleLine="false"
 
-        android:background="@android:color/transparent"
+        android:background="@null"
+
 
         android:paddingStart="8dp"
         android:paddingEnd="8dp"

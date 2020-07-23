@@ -8,7 +8,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.OnNotesTitleClickListener {
 
     private Toolbar toolbar;
+    private TextView toolbarTitle;
     private ConstraintLayout toolbarActionModeLayout;
     private ImageButton toolbarBackButton;
     private TextView toolbarTextView;
@@ -59,14 +59,18 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         toolbar = view.findViewById(R.id.toolbar_layout);
         activity.setSupportActionBar(toolbar);
 
+        toolbarTitle = view.findViewById(R.id.title_toolbar_title);
         toolbarBackButton = view.findViewById(R.id.toolbar_action_back_button);
         toolbarTextView = view.findViewById(R.id.toolbar_action_text_view);
         toolbarActionModeLayout = view.findViewById(R.id.action_toolbar_layout);
 
+        toolbarTitle.setVisibility(View.VISIBLE);
         toolbarActionModeLayout.setVisibility(View.GONE);
         toolbarBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                toolbarTitle.setVisibility(View.VISIBLE);
                 toolbarActionModeLayout.setVisibility(View.GONE);
                 toolbar.getMenu().clear();
                 inActionMode = false;
@@ -207,6 +211,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         {
             toolbar.getMenu().clear();
 
+            toolbarTitle.setVisibility(View.GONE);
             toolbarActionModeLayout.setVisibility(View.VISIBLE);
             toolbar.inflateMenu(R.menu.context_action_mode_menu);
             selectedNoteItems.add(notesTitleAdapter.getNoteItems().get(position));

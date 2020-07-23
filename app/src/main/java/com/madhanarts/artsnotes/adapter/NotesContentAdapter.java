@@ -1,18 +1,15 @@
 package com.madhanarts.artsnotes.adapter;
 
 import android.content.Context;
-import android.os.Build;
 import android.text.method.KeyListener;
+import android.text.util.Linkify;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Chronometer;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -22,13 +19,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.madhanarts.artsnotes.DoubleClickListener;
+import com.madhanarts.artsnotes.LinedEditText;
 import com.madhanarts.artsnotes.NotesContentFragment;
 import com.madhanarts.artsnotes.R;
-import java.io.File;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -93,6 +90,9 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 Log.d("content_op", "On bind KeyListener : " + holder.mKeyListener.toString());
 
                 holder.notesEditText.setCursorVisible(true);
+                holder.notesEditText.setLinksClickable(false);
+                holder.notesEditText.setAutoLinkMask(0);
+
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.notesEditText.setShowSoftInputOnFocus(true);
                 }
@@ -100,6 +100,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 //holder.notesEditText.setEnabled(true);
 
                 NotesContentFragment.inEditMode = true;
+                notesContentFragment.contentNoteModeInfo.setText("Edit Mode");
 
             }
 
@@ -131,7 +132,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
         // for text layout
         public KeyListener mKeyListener;
-        public EditText notesEditText;
+        public LinedEditText notesEditText;
         public View.OnTouchListener mOnTouchListener;
         public View.OnFocusChangeListener mFocusChangeListener;
 
@@ -241,6 +242,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                     gestureDetector.onTouchEvent(event);
                     return false;
                 }
+
             };
 
             mFocusChangeListener = new View.OnFocusChangeListener() {
@@ -281,6 +283,8 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 */
                 doubleTapped = true;
                 NotesContentFragment.inEditMode = true;
+                notesEditText.setAutoLinkMask(0);
+                notesEditText.setLinksClickable(false);
 
                 notesEditText.setOnTouchListener(mOnTouchListener);
                 notesEditText.setOnFocusChangeListener(mFocusChangeListener);
@@ -337,6 +341,9 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
                 notesEditText.setOnTouchListener(mOnTouchListener);
                 notesEditText.setOnFocusChangeListener(null);
+
+                notesEditText.setAutoLinkMask(Linkify.ALL);
+                notesEditText.setLinksClickable(true);
 
 
 /*
@@ -446,8 +453,8 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
     public String getText(int position)
     {
 
-        Scanner myFileReader = null;
-        String text = "";
+        Scanner myFileReader;
+        StringBuilder text = new StringBuilder();
 
         if (position != -1) {
             try {
@@ -455,12 +462,12 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
                 myFileReader = new Scanner(notesItemFiles.get(position));
 
                 while (myFileReader.hasNextLine()) {
-                    text = text + myFileReader.nextLine() + "\n";
+                    text.append(myFileReader.nextLine()).append("\n");
                 }
 
-                text = text.trim();
+                text = new StringBuilder(text.toString().trim());
 
-                Log.d("content_op", text);
+                Log.d("content_op", text.toString());
 
                 myFileReader.close();
             } catch (FileNotFoundException e) {
@@ -468,7 +475,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             }
         }
 
-        return text;
+        return text.toString();
 
     }
 
