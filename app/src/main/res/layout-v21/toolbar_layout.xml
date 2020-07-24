@@ -33,6 +33,7 @@
         android:layout_height="match_parent"
         android:id="@+id/action_toolbar_layout"
         android:visibility="gone"
+
         >
         <ImageButton
             android:layout_width="wrap_content"

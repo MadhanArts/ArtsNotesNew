@@ -14,23 +14,25 @@
     >
 
     <TextView
+        android:id="@+id/title_toolbar_title"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/title_toolbar_title"
+
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:padding="10dp"
         android:text="ArtsNotes"
+        android:textColor="@android:color/white"
+
         android:textSize="22sp"
         android:textStyle="normal"
-        android:textColor="@android:color/white"
-        android:gravity="center_vertical"
-        android:padding="10dp"
-        android:visibility="visible"
-
-        />
+        android:visibility="visible" />
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/action_toolbar_layout"
         android:visibility="gone"
+
         >
         <ImageButton
             android:layout_width="wrap_content"

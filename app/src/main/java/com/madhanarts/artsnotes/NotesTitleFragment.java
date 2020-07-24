@@ -1,5 +1,6 @@
 package com.madhanarts.artsnotes;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -73,6 +74,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                 toolbarTitle.setVisibility(View.VISIBLE);
                 toolbarActionModeLayout.setVisibility(View.GONE);
                 toolbar.getMenu().clear();
+                toolbar.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimaryDark));
                 inActionMode = false;
                 toolbar.inflateMenu(R.menu.menu_bar_layout);
                 removeActionMode();
@@ -211,6 +213,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         {
             toolbar.getMenu().clear();
 
+            toolbar.setBackgroundColor(Color.parseColor("#A45B03"));
             toolbarTitle.setVisibility(View.GONE);
             toolbarActionModeLayout.setVisibility(View.VISIBLE);
             toolbar.inflateMenu(R.menu.context_action_mode_menu);

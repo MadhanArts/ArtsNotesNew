@@ -1,6 +1,8 @@
 package com.madhanarts.artsnotes;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -14,6 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -112,6 +116,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             public void onClick(View v) {
                 contentToolbarActionModeLayout.setVisibility(View.GONE);
                 contentToolbarLayout.setVisibility(View.VISIBLE);
+                toolbar.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimaryDark));
 
                 //toolbar.getMenu().clear();
                 inActionMode = false;
@@ -167,7 +172,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         super.onPrepareOptionsMenu(menu);
         if (option.equals("create_new"))
         {
-            menu.clear();
+            menu.setGroupVisible(R.id.content_action_text_mode, false);
+            menu.findItem(R.id.content_action_done).setVisible(true);
+
         }
     }
 
@@ -197,6 +204,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                     inActionMode = true;
                     contentToolbarLayout.setVisibility(View.GONE);
                     contentToolbarActionModeLayout.setVisibility(View.VISIBLE);
+                    toolbar.setBackgroundColor(Color.parseColor("#A45B03"));
                     updateToolbarTextView(0);
 
                 }
@@ -220,6 +228,18 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             case R.id.content_action_send:
 
                 Toast.makeText(getActivity(), "Send is selected", Toast.LENGTH_SHORT).show();
+
+                return true;
+
+            case R.id.content_action_done:
+                InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                View view = activity.getCurrentFocus();
+                if (view == null)
+                {
+                    view = new View(activity);
+                }
+                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                requireActivity().getOnBackPressedDispatcher().onBackPressed();
 
                 return true;
 
@@ -348,6 +368,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             }
             noteItemsFile = noteItem.getNotesContentPathFiles();
             activity.invalidateOptionsMenu();
+
             inEditMode = true;
 
         }
@@ -697,7 +718,10 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         toolbarEditText.setCursorVisible(false);
         toolbarEditText.setBackground(null);
 
+        toolbar.getMenu().clear();
         toolbar.inflateMenu(R.menu.note_content_action_mode_menu);
+        toolbar.getMenu().setGroupVisible(R.id.content_action_text_mode, true);
+        toolbar.getMenu().findItem(R.id.content_action_done).setVisible(false);
 
         addButton.setVisibility(View.GONE);
 
@@ -712,7 +736,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     private void editViewModeToolbar()
     {
 
-        toolbar.getMenu().clear();
+        //toolbar.getMenu().clear();
+        toolbar.getMenu().setGroupVisible(R.id.content_action_text_mode, false);
+        toolbar.getMenu().findItem(R.id.content_action_done).setVisible(true);
 
         toolbarEditText.setFocusable(true);
         toolbarEditText.setFocusableInTouchMode(true);

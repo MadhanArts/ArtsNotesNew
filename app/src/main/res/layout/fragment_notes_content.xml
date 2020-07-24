@@ -20,7 +20,7 @@
         android:background="#FFEB3B"
         android:padding="2dp"
 
-        android:text="Non Edit Mode"
+        android:text="Edit Mode"
 
 
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
