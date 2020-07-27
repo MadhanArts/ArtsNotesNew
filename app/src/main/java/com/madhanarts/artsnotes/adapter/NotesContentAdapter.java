@@ -1,6 +1,7 @@
 package com.madhanarts.artsnotes.adapter;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.text.util.Linkify;
 import android.util.Log;
@@ -41,14 +42,19 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
     private NotesContentFragment notesContentFragment;
 
+    // Settings Values
 
-    public NotesContentAdapter(NotesContentFragment notesContentFragment, Context context, ArrayList<File> notesItemFiles, ToolbarViewChanger toolbarViewChanger, PlayButtonListener playButtonListener)
+    private Bundle settingsBundle = new Bundle();
+
+
+    public NotesContentAdapter(NotesContentFragment notesContentFragment, Context context, ArrayList<File> notesItemFiles, ToolbarViewChanger toolbarViewChanger, PlayButtonListener playButtonListener, Bundle settingsBundle)
     {
         this.context = context;
         this.notesItemFiles = notesItemFiles;
         this.toolbarViewChanger = toolbarViewChanger;
         this.playButtonListener = playButtonListener;
         this.notesContentFragment = notesContentFragment;
+        this.settingsBundle = settingsBundle;
 
     }
 
@@ -147,6 +153,13 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             super(itemView);
 
             notesEditText = itemView.findViewById(R.id.notes_item_text);
+
+            // Settings Values
+            //settingsBundle.getFloat("pref_setting_text_size");
+            notesEditText.setTextSize(settingsBundle.getFloat("pref_setting_text_size"));
+
+            // settings close
+
             //notesEditText.setRawInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
             //saveTextButton = itemView.findViewById(R.id.notes_item_text_save_button);
 

@@ -1,5 +1,6 @@
 package com.madhanarts.artsnotes;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,9 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +46,8 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
     private int counter = 0;
 
     private AppCompatActivity activity;
+    private RelativeLayout emptyNoteView;
+
 
     public NotesTitleFragment(AppCompatActivity activity)
     {
@@ -55,6 +58,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_notes_title, container, false);
 
         toolbar = view.findViewById(R.id.toolbar_layout);
@@ -178,10 +182,30 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                 selectedNoteItems.clear();
                 toolbarBackButton.callOnClick();
 
+                if (NotesTitleFragment.this.notesTitleAdapter.getItemCount() == 0)
+                {
+                    notesTitlesRecycler.setVisibility(View.GONE);
+                    emptyNoteView.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    notesTitlesRecycler.setVisibility(View.VISIBLE);
+                    emptyNoteView.setVisibility(View.GONE);
+                }
+
                 return true;
 
             case R.id.action_share:
                 Toast.makeText(getActivity(), "Share option is selected", Toast.LENGTH_SHORT).show();
+                return true;
+
+            case R.id.menu_settings:
+
+                Intent intent = new Intent(activity, SettingActivity.class);
+
+                startActivity(intent);
+
+                return true;
 
             default:
 
@@ -197,6 +221,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         super.onViewCreated(view, savedInstanceState);
 
         notesTitlesRecycler = view.findViewById(R.id.notes_title_recycler);
+        emptyNoteView = view.findViewById(R.id.note_title_empty_view);
 
 
         //NotesTitleAdapter notesTitleAdapter = new NotesTitleAdapter(noteItems, this);
@@ -297,6 +322,16 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
             @Override
             public void onTaskComplete(NotesTitleAdapter notesTitleAdapter) {
                 NotesTitleFragment.this.notesTitleAdapter = notesTitleAdapter;
+                if (NotesTitleFragment.this.notesTitleAdapter.getItemCount() == 0)
+                {
+                    notesTitlesRecycler.setVisibility(View.GONE);
+                    emptyNoteView.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    notesTitlesRecycler.setVisibility(View.VISIBLE);
+                    emptyNoteView.setVisibility(View.GONE);
+                }
             }
         });
         backgroundTask.execute("get_notes");

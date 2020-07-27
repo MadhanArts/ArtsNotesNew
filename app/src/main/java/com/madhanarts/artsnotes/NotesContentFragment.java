@@ -2,12 +2,14 @@ package com.madhanarts.artsnotes;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -42,7 +43,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -88,6 +91,9 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
     private int counter = 0;
 
     private AppCompatActivity activity;
+
+    // Settings Values
+    private Bundle settingsBundle = new Bundle();
 
     public NotesContentFragment(AppCompatActivity activity, String option, NoteItem noteItem)
     {
@@ -411,7 +417,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         }
 
 
-        notesContentAdapter = new NotesContentAdapter(NotesContentFragment.this, getContext(), noteItemsFile,this, this);
+        notesContentAdapter = new NotesContentAdapter(NotesContentFragment.this, getContext(), noteItemsFile,this, this, settingsBundle);
         notesContentRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         notesContentRecycler.setHasFixedSize(true);
 
@@ -997,6 +1003,22 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         {
             mediaPlayer.release();
         }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        String textSizeVal = sharedPreferences.getString(SettingFragment.PREF_TEXT_SIZE, "Medium");
+
+        List<String> textSizeKeys = Arrays.asList(activity.getResources().getStringArray(R.array.pref_text_size_values));
+        float[] textSizeValues = {20, 24, 28, 32};
+        float testSize;
+        testSize = textSizeValues[textSizeKeys.indexOf(textSizeVal)];
+        settingsBundle.putFloat("pref_setting_text_size", testSize);
+
 
     }
 
