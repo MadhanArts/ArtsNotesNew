@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="pref_sync"
+        android:title="@string/sync_pref"
+        android:summary="@string/sync_pref_summary"
+        android:defaultValue="true"
+        />
+
+    <ListPreference
+        android:dependency="pref_sync"
+        android:key="pref_text_size"
+        android:title="@string/pref_text_size_title"
+        android:entries="@array/pref_text_size_entries"
+        android:entryValues="@array/pref_text_size_values"
+        android:defaultValue="@string/pref_text_size_default"
+        android:summary="@string/pref_text_size_summary"
+        />
+
+
+
+
+</PreferenceScreen>
