@@ -44,7 +44,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
 
     // Settings Values
 
-    private Bundle settingsBundle = new Bundle();
+    private Bundle settingsBundle;
 
 
     public NotesContentAdapter(NotesContentFragment notesContentFragment, Context context, ArrayList<File> notesItemFiles, ToolbarViewChanger toolbarViewChanger, PlayButtonListener playButtonListener, Bundle settingsBundle)

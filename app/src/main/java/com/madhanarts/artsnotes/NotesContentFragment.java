@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.madhanarts.artsnotes.adapter.NotesContentAdapter;
+import com.madhanarts.artsnotes.dialog.RecordDialog;
 import com.madhanarts.artsnotes.model.NoteItem;
 
 import java.io.File;

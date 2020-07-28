@@ -1,4 +1,4 @@
-package com.madhanarts.artsnotes;
+package com.madhanarts.artsnotes.dialog;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -19,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
+
+import com.madhanarts.artsnotes.R;
 
 import java.io.File;
 import java.io.IOException;

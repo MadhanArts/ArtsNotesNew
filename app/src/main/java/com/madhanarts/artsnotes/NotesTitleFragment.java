@@ -1,5 +1,6 @@
 package com.madhanarts.artsnotes;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -24,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.madhanarts.artsnotes.adapter.NotesTitleAdapter;
+import com.madhanarts.artsnotes.dialog.RecordDialog;
 import com.madhanarts.artsnotes.model.NoteItem;
 
 import java.util.ArrayList;
@@ -47,6 +50,8 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
 
     private AppCompatActivity activity;
     private RelativeLayout emptyNoteView;
+    private String addOptionSelected;
+    private CharSequence[] menuOptions = {"Note", "Checklist"};
 
 
     public NotesTitleFragment(AppCompatActivity activity)
@@ -127,15 +132,61 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         {
             case R.id.menu_add_icon:
 
-                NotesContentFragment contentFragment = new NotesContentFragment(activity, "create_new", null);
-                //Bundle bundle = new Bundle();
-                //bundle.putString("option", "create_new");
-                //contentFragment.setArguments(bundle);
-                activity.getSupportFragmentManager()
-                        .beginTransaction()
-                        .addToBackStack(null)
-                        .replace(R.id.fragment_container, contentFragment)
-                        .commit();
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                builder.setTitle("ADD...");
+
+                addOptionSelected = menuOptions[0].toString();
+
+                builder.setSingleChoiceItems(menuOptions, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        addOptionSelected = menuOptions[which].toString();
+                        Toast.makeText(getContext(), menuOptions[which] + " is selected", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        if (addOptionSelected.toLowerCase().equals("note"))
+                        {
+                            NotesContentFragment contentFragment = new NotesContentFragment(activity, "create_new", null);
+                            //Bundle bundle = new Bundle();
+                            //bundle.putString("option", "create_new");
+                            //contentFragment.setArguments(bundle);
+                            activity.getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .addToBackStack(null)
+                                    .replace(R.id.fragment_container, contentFragment)
+                                    .commit();
+                            Toast.makeText(getContext(), addOptionSelected, Toast.LENGTH_SHORT).show();
+                        }
+                        else if (addOptionSelected.toLowerCase().equals("checklist"))
+                        {
+
+                            NotesCheckListFragment checkListFragment = new NotesCheckListFragment(activity, "create_new", null);
+                            //Bundle bundle = new Bundle();
+                            //bundle.putString("option", "create_new");
+                            //contentFragment.setArguments(bundle);
+                            activity.getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .addToBackStack(null)
+                                    .replace(R.id.fragment_container, checkListFragment)
+                                    .commit();
+
+                            Toast.makeText(getContext(), addOptionSelected + " is selected", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+
+                builder.setNegativeButton("CANCEL", null);
+
+                builder.create();
+                builder.show();
 
 
                 return true;
