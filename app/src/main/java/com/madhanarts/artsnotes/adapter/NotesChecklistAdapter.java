@@ -20,6 +20,7 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
 
     private ArrayList<String> noteChecklistItems;
     private NotesCheckListFragment notesCheckListFragment;
+    public static boolean doubleTapped = false;
 
     public NotesChecklistAdapter(NotesCheckListFragment notesCheckListFragment, ArrayList<String> noteChecklistItems)
     {
@@ -44,6 +45,12 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
     public void onBindViewHolder(@NonNull NotesChecklistViewHolder holder, int position) {
 
         holder.noteChecklistText.setText(noteChecklistItems.get(position));
+
+        if (doubleTapped)
+        {
+            holder.noteChecklistMover.setVisibility(View.VISIBLE);
+            holder.noteChecklistClear.setVisibility(View.VISIBLE);
+        }
 
 
     }

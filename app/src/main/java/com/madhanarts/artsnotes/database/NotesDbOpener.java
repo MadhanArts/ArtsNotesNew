@@ -17,7 +17,8 @@ public class NotesDbOpener extends SQLiteOpenHelper {
             NotesContract.NotesEntry.NOTES_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             NotesContract.NotesEntry.NOTE_TITLE + " text," +
             NotesContract.NotesEntry.NOTES_FILE_PATH + " text," +
-            NotesContract.NotesEntry.NOTES_LAST_MODIFIED + " text"
+            NotesContract.NotesEntry.NOTES_LAST_MODIFIED + " text," +
+            NotesContract.NotesEntry.NOTES_MODE + " text"
             + ")";
 
     public static final String DROP_TABLE = "drop table if exists " + NotesContract.NotesEntry.TABLE_NAME;
@@ -25,7 +26,6 @@ public class NotesDbOpener extends SQLiteOpenHelper {
     public NotesDbOpener(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
     }
 
 
@@ -43,13 +43,14 @@ public class NotesDbOpener extends SQLiteOpenHelper {
     }
 
 
-    public long addNewNote(String noteTitle, String notePath, String noteLastModified, SQLiteDatabase database)
+    public long addNewNote(String noteTitle, String notePath, String noteLastModified, String noteMode, SQLiteDatabase database)
     {
         ContentValues notesValues = new ContentValues();
 
         notesValues.put(NotesContract.NotesEntry.NOTE_TITLE, noteTitle);
         notesValues.put(NotesContract.NotesEntry.NOTES_FILE_PATH, notePath);
         notesValues.put(NotesContract.NotesEntry.NOTES_LAST_MODIFIED, noteLastModified);
+        notesValues.put(NotesContract.NotesEntry.NOTES_MODE, noteMode);
 
         //Log.d("content_op", noteId + " is inserted");
         return database.insert(NotesContract.NotesEntry.TABLE_NAME, null, notesValues);
@@ -57,13 +58,13 @@ public class NotesDbOpener extends SQLiteOpenHelper {
 
     public Cursor getNotes(SQLiteDatabase database)
     {
-
         String[] projections = {
 
                 NotesContract.NotesEntry.NOTES_ID,
                 NotesContract.NotesEntry.NOTE_TITLE,
                 NotesContract.NotesEntry.NOTES_FILE_PATH,
-                NotesContract.NotesEntry.NOTES_LAST_MODIFIED
+                NotesContract.NotesEntry.NOTES_LAST_MODIFIED,
+                NotesContract.NotesEntry.NOTES_MODE
 
         };
 

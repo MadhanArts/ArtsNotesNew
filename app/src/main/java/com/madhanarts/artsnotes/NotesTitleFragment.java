@@ -345,22 +345,27 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
     @Override
     public void onClickTitle(NoteItem noteItem, int position) {
 
-        NotesContentFragment contentFragment = new NotesContentFragment(activity, "get_exist", noteItem);
-        //Bundle bundle = new Bundle();
-        //bundle.putString("option", "get_exist");
-        //bundle.putSerializable("notes_Obj", noteItem);
+        if (noteItem.getNoteMode().equals("note"))
+        {
+            NotesContentFragment contentFragment = new NotesContentFragment(activity, "get_exist", noteItem);
 
+            activity.getSupportFragmentManager()
+                    .beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.fragment_container, contentFragment)
+                    .commit();
 
-/*        bundle.putString("note_title", noteTitle);
-        bundle.putLong("note_last_modified", lastModified);*/
-        //contentFragment.setArguments(bundle);
+        }
+        else if (noteItem.getNoteMode().equals("checklist"))
+        {
+            NotesCheckListFragment checkListFragment = new NotesCheckListFragment(activity, "get_exist", noteItem);
+            activity.getSupportFragmentManager()
+                    .beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.fragment_container, checkListFragment)
+                    .commit();
 
-
-        activity.getSupportFragmentManager()
-                .beginTransaction()
-                .addToBackStack(null)
-                .replace(R.id.fragment_container, contentFragment)
-                .commit();
+        }
 
     }
 

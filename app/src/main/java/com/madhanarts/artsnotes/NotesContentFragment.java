@@ -371,7 +371,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         {
             if (noteItem == null)
             {
-                noteItem = new NoteItem(0, "", new ArrayList<File>(), 0);
+                noteItem = new NoteItem(0, "", new ArrayList<File>(), 0, "note");
             }
             noteItemsFile = noteItem.getNotesContentPathFiles();
             activity.invalidateOptionsMenu();
@@ -847,7 +847,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                     noteItem.setNoteId((int) noteId);
                 }
             });
-            backgroundTask.execute("add_new_note", noteTitle, notesFilePath.toString(), Long.toString(notesLastModified));
+            backgroundTask.execute("add_new_note", noteTitle, notesFilePath.toString(), Long.toString(notesLastModified), "note");
 
             option = "get_exist";
 

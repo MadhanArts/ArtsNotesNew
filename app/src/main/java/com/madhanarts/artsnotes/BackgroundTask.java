@@ -73,8 +73,9 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
                 String noteTitle = params[1];
                 String noteFilePath = params[2];
                 String noteLastModified = params[3];
+                String noteMode = params[4];
 
-                noteId = notesDbOpener.addNewNote(noteTitle, noteFilePath, noteLastModified, database);
+                noteId = notesDbOpener.addNewNote(noteTitle, noteFilePath, noteLastModified, noteMode, database);
 
                 notesDbOpener.close();
                 return "add_note";
@@ -97,6 +98,7 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
                     String noteTitle = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTE_TITLE));
                     String noteFilepath = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_FILE_PATH));
                     String noteLastModified = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_LAST_MODIFIED));
+                    String noteMode = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.NOTES_MODE));
 
                     ArrayList<File> noteContentPathFiles;
 /*                if (noteFilepath.equals(""))
@@ -110,7 +112,7 @@ public class BackgroundTask extends AsyncTask<String, NoteItem, String> {
 
                     noteContentPathFiles = convertPathToFiles(noteFilepath);
 
-                    NoteItem noteItem = new NoteItem(Integer.parseInt(noteId), noteTitle, noteContentPathFiles, Long.parseLong(noteLastModified));
+                    NoteItem noteItem = new NoteItem(Integer.parseInt(noteId), noteTitle, noteContentPathFiles, Long.parseLong(noteLastModified), noteMode);
 
                     publishProgress(noteItem);
 
