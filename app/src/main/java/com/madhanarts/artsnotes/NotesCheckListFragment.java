@@ -1,7 +1,6 @@
 package com.madhanarts.artsnotes;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -27,7 +26,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.madhanarts.artsnotes.adapter.NotesChecklistAdapter;
-import com.madhanarts.artsnotes.adapter.NotesContentAdapter;
 import com.madhanarts.artsnotes.dialog.ChecklistAddItemDialog;
 import com.madhanarts.artsnotes.model.NoteItem;
 
@@ -102,7 +100,7 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
         switch (item.getItemId())
         {
             case R.id.content_action_edit:
-                NotesContentAdapter.doubleTapped = true;
+                NotesChecklistAdapter.doubleTapped = true;
                 inEditMode = true;
                 editViewModeToolbar();
                 notesChecklistAdapter.notifyDataSetChanged();
@@ -233,7 +231,7 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
         }
 
 
-            noteChecklistAddFirst.setOnClickListener(new View.OnClickListener() {
+        noteChecklistAddFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCheckListDialog("create_item", 0);
@@ -269,6 +267,14 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
                         inEditMode = false;
 
                     } else {
+
+                        String tempText = convertItemsToText();
+
+                        if (!getFileText(noteChecklistItemFile).equals(tempText))
+                        {
+                            setFileText(tempText);
+                        }
+
                         this.setEnabled(false);
                         activity.getSupportFragmentManager().popBackStackImmediate();
 
@@ -287,6 +293,14 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
 
                     }
                     else {
+
+                        String tempText = convertItemsToText();
+
+                        if (!getFileText(noteChecklistItemFile).equals(tempText))
+                        {
+                            setFileText(tempText);
+                        }
+
                         this.setEnabled(false);
                         activity.getSupportFragmentManager().popBackStackImmediate();
 
@@ -366,14 +380,11 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
                 e.printStackTrace();
             }
 
-            StringBuilder tempText = new StringBuilder();
+            String tempText = convertItemsToText();
 
-            for (int i = 0; i < noteChecklistItems.size(); i++)
-            {
-                tempText.append(noteChecklistItems.get(i)).append("%%");
-            }
+            Log.d("check_op", "create new saving : " + tempText);
 
-            setFileText(tempText.toString().trim());
+            setFileText(tempText);
 
             long notesLastModified;
 
@@ -381,20 +392,6 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
 
             notesLastModified = noteChecklistItemFile.lastModified();
 
-            /*else
-            {
-                Date now = new Date();
-                notesLastModified = now.getTime();
-            }
-*/
-
-/*            for (int i = 0; i < noteChecklistItems.size(); i++) {
-                notesFilePath.append(noteChecklistItems.get(i)).append("%%");
-                if (noteItemsFile.get(i).lastModified() > notesLastModified) {
-                    notesLastModified = noteItemsFile.get(i).lastModified();
-                }
-
-            }*/
 
             Log.d("notes_files", notesFilePath);
 
@@ -420,30 +417,14 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
 
             long notesLastModified;
 
-            /*else
+            String tempText = convertItemsToText();
+
+            if (!getFileText(noteChecklistItemFile).equals(tempText))
             {
-                Date now = new Date();
-                notesLastModified = now.getTime();
-            }*/
-
-
-            /*for (int i = 0; i < noteItemsFile.size(); i++) {
-                notesFilePath.append(noteItemsFile.get(i).getAbsolutePath()).append("%%");
-                if (noteItemsFile.get(i).lastModified() > notesLastModified) {
-                    notesLastModified = noteItemsFile.get(i).lastModified();
-                }
-            }*/
-
-            StringBuilder tempText = new StringBuilder();
-            for (int i = 0; i < noteChecklistItems.size(); i++)
-            {
-                tempText.append(noteChecklistItems.get(i)).append("%%");
+                setFileText(tempText);
             }
 
-            if (!getFileText(noteChecklistItemFile).equals(tempText.toString().trim()))
-            {
-                setFileText(tempText.toString().trim());
-            }
+            Log.d("check_op", "get_exist saving : " + tempText);
 
             notesFilePath = noteChecklistItemFile.getAbsolutePath() + "%%";
             Log.d("notes_files", notesFilePath);
@@ -457,6 +438,18 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
         }
 
 
+    }
+
+    private String convertItemsToText()
+    {
+        StringBuilder tempText = new StringBuilder();
+
+        for (int i = 0; i < noteChecklistItems.size(); i++)
+        {
+            tempText.append(noteChecklistItems.get(i)).append("%%");
+        }
+
+        return tempText.toString().trim();
     }
 
     private String getFileText(File file)
@@ -582,6 +575,13 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        saveNotes();
+
+    }
 
     @Override
     public void onAddItemSave(String item, int position) {

@@ -1,5 +1,6 @@
 package com.madhanarts.artsnotes;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,6 +12,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -274,12 +277,22 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
         notesTitlesRecycler = view.findViewById(R.id.notes_title_recycler);
         emptyNoteView = view.findViewById(R.id.note_title_empty_view);
 
-
         //NotesTitleAdapter notesTitleAdapter = new NotesTitleAdapter(noteItems, this);
         notesTitlesRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         notesTitlesRecycler.setHasFixedSize(true);
 
         //NotesTitlesRecycler.setAdapter(notesTitleAdapter);
+
+    }
+
+    private void layoutAnimation(RecyclerView recyclerView)
+    {
+        Context context = recyclerView.getContext();
+        LayoutAnimationController animationController = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_fall_down);
+
+        notesTitlesRecycler.setLayoutAnimation(animationController);
+        notesTitlesRecycler.getAdapter().notifyDataSetChanged();
+        notesTitlesRecycler.scheduleLayoutAnimation();
 
     }
 
@@ -388,6 +401,9 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                     notesTitlesRecycler.setVisibility(View.VISIBLE);
                     emptyNoteView.setVisibility(View.GONE);
                 }
+
+                layoutAnimation(notesTitlesRecycler);
+
             }
         });
         backgroundTask.execute("get_notes");

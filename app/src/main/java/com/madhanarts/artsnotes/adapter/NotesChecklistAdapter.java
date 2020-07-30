@@ -44,14 +44,27 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
     @Override
     public void onBindViewHolder(@NonNull NotesChecklistViewHolder holder, int position) {
 
-        holder.noteChecklistText.setText(noteChecklistItems.get(position));
+        String tempItem = noteChecklistItems.get(position);
+        if (noteChecklistItems.get(position).contains("[c]"))
+        {
+
+            tempItem = tempItem.substring(0, tempItem.lastIndexOf("["));
+            holder.noteChecklistText.setPaintFlags(holder.noteChecklistText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.checked = true;
+
+        }
+        else
+        {
+            holder.noteChecklistText.setPaintFlags(holder.noteChecklistText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            holder.checked = false;
+        }
+        holder.noteChecklistText.setText(tempItem);
 
         if (doubleTapped)
         {
             holder.noteChecklistMover.setVisibility(View.VISIBLE);
             holder.noteChecklistClear.setVisibility(View.VISIBLE);
         }
-
 
     }
 
@@ -102,17 +115,33 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
                         if (!checked)
                         {
                             noteChecklistText.setPaintFlags(noteChecklistText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            String tempItem = noteChecklistItems.get(getAdapterPosition());
+                            noteChecklistItems.set(getAdapterPosition(), tempItem + "[c]");
+
+                            Log.d("check_op", noteChecklistItems.get(getAdapterPosition()));
                             checked = true;
                         }
                         else
                         {
                             noteChecklistText.setPaintFlags(noteChecklistText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                            String tempItem = noteChecklistItems.get(getAdapterPosition());
+                            noteChecklistItems.set(getAdapterPosition(), tempItem.substring(0, tempItem.lastIndexOf("[")));
+
+                            Log.d("check_op", noteChecklistItems.get(getAdapterPosition()));
                             checked = false;
                         }
                     }
                 }
             });
 
+            noteChecklistClear.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    noteChecklistItems.remove(getAdapterPosition());
+                    notifyDataSetChanged();
+                }
+            });
 
         }
     }
