@@ -1,6 +1,7 @@
 package com.madhanarts.artsnotes;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.madhanarts.artsnotes.adapter.NotesChecklistAdapter;
@@ -37,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -44,6 +48,7 @@ import java.util.Scanner;
 public class NotesCheckListFragment extends Fragment implements ChecklistAddItemDialog.ChecklistAddItemDialogListener {
 
     private Toolbar toolbar;
+    public TextView checklistModeInfo;
 
     private ConstraintLayout noteChecklistAddFirst;
     private ConstraintLayout noteChecklistAddLast;
@@ -60,6 +65,7 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
     private ArrayList<String> noteChecklistItems = new ArrayList<>();
     private EditText toolbarEditText;
     private Drawable toolbarEditTextBack;
+    private Bundle settingsBundle = new Bundle();
 
     public NotesCheckListFragment(AppCompatActivity activity, String option, NoteItem noteItem)
     {
@@ -85,6 +91,8 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
+
+        menu.findItem(R.id.content_action_delete).setVisible(false);
         if (option.equals("create_new"))
         {
             menu.setGroupVisible(R.id.content_action_text_mode, false);
@@ -182,6 +190,7 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        checklistModeInfo = view.findViewById(R.id.checklist_mode_info);
         noteChecklistAddFirst = view.findViewById(R.id.notes_checklist_add_first);
         noteChecklistAddLast = view.findViewById(R.id.notes_checklist_add_last);
         noteChecklistRecycler = view.findViewById(R.id.notes_checklist_recycler);
@@ -196,9 +205,8 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
             }
             //noteChecklistItemFile = noteItem.getNotesContentPathFiles().get(0);
             activity.invalidateOptionsMenu();
-
             inEditMode = true;
-
+            checklistModeInfo.setText("Edit Mode");
         }
         else if(option.equals("get_exist")) {
 
@@ -220,12 +228,10 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
                 noteChecklistItems = new ArrayList<>(Arrays.asList(getFileText(noteChecklistItemFile).split("%%")));
 
                 toolbarEditText.setText(noteItem.getNotesTitle());
-
                 textViewModeToolbar();
                 NotesChecklistAdapter.doubleTapped = false;
-
                 inEditMode = false;
-
+                checklistModeInfo.setText("Non Edit Mode");
             }
 
         }
@@ -246,7 +252,7 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
         });
 
 
-        notesChecklistAdapter = new NotesChecklistAdapter(this, noteChecklistItems);
+        notesChecklistAdapter = new NotesChecklistAdapter(this, noteChecklistItems, settingsBundle);
 
         noteChecklistRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         noteChecklistRecycler.setHasFixedSize(true);
@@ -345,6 +351,8 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
             }
 
         }
+
+        checklistModeInfo.setText("Non Edit Mode");
 
         noteChecklistAddFirst.setVisibility(View.GONE);
         noteChecklistAddLast.setVisibility(View.GONE);
@@ -542,6 +550,7 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
         toolbar.getMenu().clear();
         toolbar.inflateMenu(R.menu.note_content_action_mode_menu);
         toolbar.getMenu().setGroupVisible(R.id.content_action_text_mode, true);
+        toolbar.getMenu().findItem(R.id.content_action_delete).setVisible(false);
         toolbar.getMenu().findItem(R.id.content_action_done).setVisible(false);
 
         noteChecklistAddFirst.setVisibility(View.GONE);
@@ -580,6 +589,23 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
         super.onPause();
 
         saveNotes();
+
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        String textSizeVal = sharedPreferences.getString(SettingFragment.PREF_CHECKLIST_TEXT_SIZE, "Medium");
+
+        List<String> textSizeKeys = Arrays.asList(activity.getResources().getStringArray(R.array.pref_text_size_values));
+        float[] textSizeValues = {20, 24, 28, 32};
+        float testSize;
+        testSize = textSizeValues[textSizeKeys.indexOf(textSizeVal)];
+        settingsBundle.putFloat("pref_setting_text_size", testSize);
+
 
     }
 

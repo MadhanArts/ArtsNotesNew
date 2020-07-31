@@ -56,8 +56,14 @@ public class ChecklistAddItemDialog extends DialogFragment {
 
         if (option.equals("edit_item"))
         {
-            checklistAddItemEditText.setText(item);
-            checklistAddItemEditText.setSelection(item.length());
+            String tempItem = item;
+            if (item.contains("[c]"))
+            {
+                tempItem = item.substring(0, item.lastIndexOf("["));
+            }
+            checklistAddItemTitle.setText("Edit item");
+            checklistAddItemEditText.setText(tempItem);
+            checklistAddItemEditText.setSelection(tempItem.length());
         }
 
 
@@ -73,7 +79,14 @@ public class ChecklistAddItemDialog extends DialogFragment {
                     }
                     else
                     {
-                        checklistAddItemDialogListener.onEditItemSave(checklistAddItemEditText.getText().toString(), position);
+                        if (item.contains("[c]"))
+                        {
+                            checklistAddItemDialogListener.onEditItemSave(checklistAddItemEditText.getText().toString() + "[c]", position);
+                        }
+                        else
+                        {
+                            checklistAddItemDialogListener.onEditItemSave(checklistAddItemEditText.getText().toString(), position);
+                        }
                     }
                 }
 

@@ -162,6 +162,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                             //contentFragment.setArguments(bundle);
                             activity.getSupportFragmentManager()
                                     .beginTransaction()
+                                    .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
                                     .addToBackStack(null)
                                     .replace(R.id.fragment_container, contentFragment)
                                     .commit();
@@ -176,6 +177,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
                             //contentFragment.setArguments(bundle);
                             activity.getSupportFragmentManager()
                                     .beginTransaction()
+                                    .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
                                     .addToBackStack(null)
                                     .replace(R.id.fragment_container, checkListFragment)
                                     .commit();
@@ -364,6 +366,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
 
             activity.getSupportFragmentManager()
                     .beginTransaction()
+                    .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
                     .addToBackStack(null)
                     .replace(R.id.fragment_container, contentFragment)
                     .commit();
@@ -374,6 +377,7 @@ public class NotesTitleFragment extends Fragment implements NotesTitleAdapter.On
             NotesCheckListFragment checkListFragment = new NotesCheckListFragment(activity, "get_exist", noteItem);
             activity.getSupportFragmentManager()
                     .beginTransaction()
+                    .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
                     .addToBackStack(null)
                     .replace(R.id.fragment_container, checkListFragment)
                     .commit();

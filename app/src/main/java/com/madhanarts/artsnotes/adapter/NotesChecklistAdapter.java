@@ -1,6 +1,7 @@
 package com.madhanarts.artsnotes.adapter;
 
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.madhanarts.artsnotes.NotesCheckListFragment;
@@ -22,10 +24,13 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
     private NotesCheckListFragment notesCheckListFragment;
     public static boolean doubleTapped = false;
 
-    public NotesChecklistAdapter(NotesCheckListFragment notesCheckListFragment, ArrayList<String> noteChecklistItems)
+    private Bundle settingsBundle;
+
+    public NotesChecklistAdapter(NotesCheckListFragment notesCheckListFragment, ArrayList<String> noteChecklistItems, Bundle settingsBundle)
     {
         this.noteChecklistItems = noteChecklistItems;
         this.notesCheckListFragment = notesCheckListFragment;
+        this.settingsBundle = settingsBundle;
 
     }
 
@@ -62,6 +67,7 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
 
         if (doubleTapped)
         {
+            notesCheckListFragment.checklistModeInfo.setText("Edit Mode");
             holder.noteChecklistMover.setVisibility(View.VISIBLE);
             holder.noteChecklistClear.setVisibility(View.VISIBLE);
         }
@@ -75,7 +81,7 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
 
     public class NotesChecklistViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView noteChecklistMover;
+        public ConstraintLayout noteChecklistMover;
         public TextView noteChecklistText;
         private boolean checked;
         public ImageButton noteChecklistClear;
@@ -84,7 +90,10 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
             super(itemView);
 
             noteChecklistMover = itemView.findViewById(R.id.notes_checklist_item_mover);
+
             noteChecklistText = itemView.findViewById(R.id.notes_checklist_item_text);
+            noteChecklistText.setTextSize(settingsBundle.getFloat("pref_setting_text_size"));
+
             noteChecklistClear = itemView.findViewById(R.id.notes_checklist_item_clear);
 
             if (NotesCheckListFragment.option.equals("create_new"))

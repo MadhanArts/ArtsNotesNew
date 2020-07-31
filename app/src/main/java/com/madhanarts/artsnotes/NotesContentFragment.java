@@ -377,7 +377,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
             activity.invalidateOptionsMenu();
 
             inEditMode = true;
-
+            contentNoteModeInfo.setText("Edit Mode");
         }
         else if(option.equals("get_exist"))
         {
@@ -406,11 +406,11 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
                     Log.d("files_list", String.valueOf(noteItemsFile.size()));
                 }
 
-                toolbarEditText.setText(noteItem.getNotesTitle());
+                contentNoteModeInfo.setText("Non Edit Mode");
 
+                toolbarEditText.setText(noteItem.getNotesTitle());
                 textViewModeToolbar();
                 NotesContentAdapter.doubleTapped = false;
-
                 inEditMode = false;
 
             }
@@ -1012,7 +1012,7 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         super.onResume();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        String textSizeVal = sharedPreferences.getString(SettingFragment.PREF_TEXT_SIZE, "Medium");
+        String textSizeVal = sharedPreferences.getString(SettingFragment.PREF_NOTE_TEXT_SIZE, "Medium");
 
         List<String> textSizeKeys = Arrays.asList(activity.getResources().getStringArray(R.array.pref_text_size_values));
         float[] textSizeValues = {20, 24, 28, 32};

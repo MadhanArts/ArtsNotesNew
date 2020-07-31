@@ -14,8 +14,9 @@ public class SettingFragment extends PreferenceFragment {
         super();
     }
 
-    public static final String PREF_SYNC = "pref_sync";
-    public static final String PREF_TEXT_SIZE = "pref_text_size";
+    public static final String PREF_NOTE_TEXT_SIZE = "pref_note_text_size";
+    public static final String PREF_CHECKLIST_TEXT_SIZE = "pref_checklist_text_size";
+
     private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
 
     @Override
@@ -34,10 +35,15 @@ public class SettingFragment extends PreferenceFragment {
                     syncPreference.setSummary(sharedPreferences.getBoolean(key, true) + "");
                 }*/
 
-                if (key.equals(PREF_TEXT_SIZE))
+                if (key.equals(PREF_NOTE_TEXT_SIZE))
                 {
-                    Preference textSizePreference = findPreference(key);
-                    textSizePreference.setSummary(sharedPreferences.getString(key,"Medium"));
+                    Preference noteTextSizePreference = findPreference(key);
+                    noteTextSizePreference.setSummary(sharedPreferences.getString(key,"Medium"));
+                }
+                if (key.equals(PREF_CHECKLIST_TEXT_SIZE))
+                {
+                    Preference checklistTextSizePreference = findPreference(key);
+                    checklistTextSizePreference.setSummary(sharedPreferences.getString(key, "Medium"));
                 }
 
             }
@@ -56,8 +62,11 @@ public class SettingFragment extends PreferenceFragment {
         syncPreference.setSummary(getPreferenceScreen().getSharedPreferences().getBoolean(PREF_SYNC, true) + "");
 */
 
-        Preference textSizePreference = findPreference(PREF_TEXT_SIZE);
-        textSizePreference.setSummary(getPreferenceScreen().getSharedPreferences().getString(PREF_TEXT_SIZE, "Medium"));
+        Preference textSizePreference = findPreference(PREF_NOTE_TEXT_SIZE);
+        textSizePreference.setSummary(getPreferenceScreen().getSharedPreferences().getString(PREF_NOTE_TEXT_SIZE, "Medium"));
+
+        Preference checklistTextSizePreference = findPreference(PREF_CHECKLIST_TEXT_SIZE);
+        checklistTextSizePreference.setSummary(getPreferenceScreen().getSharedPreferences().getString(PREF_CHECKLIST_TEXT_SIZE, "Medium"));
 
     }
 
