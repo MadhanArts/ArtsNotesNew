@@ -29,7 +29,6 @@
 
         android:background="@null"
 
-
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:paddingBottom="6dp"

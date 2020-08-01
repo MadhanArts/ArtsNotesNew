@@ -2,6 +2,7 @@ package com.madhanarts.artsnotes;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,6 +33,7 @@ import android.widget.Toast;
 import com.madhanarts.artsnotes.adapter.NotesChecklistAdapter;
 import com.madhanarts.artsnotes.dialog.ChecklistAddItemDialog;
 import com.madhanarts.artsnotes.model.NoteItem;
+import com.madhanarts.artsnotes.settings.SettingFragment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,6 +42,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -66,6 +70,7 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
     private EditText toolbarEditText;
     private Drawable toolbarEditTextBack;
     private Bundle settingsBundle = new Bundle();
+    public ItemTouchHelper itemTouchHelper;
 
     public NotesCheckListFragment(AppCompatActivity activity, String option, NoteItem noteItem)
     {
@@ -258,6 +263,7 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
         noteChecklistRecycler.setHasFixedSize(true);
         noteChecklistRecycler.setAdapter(notesChecklistAdapter);
 
+
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -335,7 +341,38 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
             }
         });
 
+
+
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(noteChecklistRecycler);
+
     }
+
+    ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
+            ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+
+            Collections.swap(noteChecklistItems, fromPosition, toPosition);
+
+            recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
+
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+
+        @Override
+        public boolean isLongPressDragEnabled() {
+            return false;
+        }
+    };
 
     private void textViewModeChecklist() {
 
@@ -347,6 +384,11 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
             {
                 viewHolder.noteChecklistMover.setVisibility(View.GONE);
                 viewHolder.noteChecklistClear.setVisibility(View.GONE);
+
+                if (viewHolder.checked)
+                {
+                    viewHolder.noteChecklistDoneCheck.setVisibility(View.VISIBLE);
+                }
 
             }
 
@@ -598,13 +640,23 @@ public class NotesCheckListFragment extends Fragment implements ChecklistAddItem
         super.onResume();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        String textSizeVal = sharedPreferences.getString(SettingFragment.PREF_CHECKLIST_TEXT_SIZE, "Medium");
 
+        String textSizeVal = sharedPreferences.getString(SettingFragment.PREF_CHECKLIST_TEXT_SIZE, "Medium");
         List<String> textSizeKeys = Arrays.asList(activity.getResources().getStringArray(R.array.pref_text_size_values));
         float[] textSizeValues = {20, 24, 28, 32};
         float testSize;
         testSize = textSizeValues[textSizeKeys.indexOf(textSizeVal)];
         settingsBundle.putFloat("pref_setting_text_size", testSize);
+
+
+        String textStyleVal = sharedPreferences.getString(SettingFragment.PREF_CHECKLIST_TEXT_STYLE, "Normal");
+
+        List<String> textStyleKeys = Arrays.asList(activity.getResources().getStringArray(R.array.pref_text_style_values));
+        int[] textStyleValues = {Typeface.NORMAL, Typeface.BOLD, Typeface.ITALIC, Typeface.BOLD_ITALIC};
+        int testStyle;
+        testStyle = textStyleValues[textStyleKeys.indexOf(textStyleVal)];
+        settingsBundle.putInt("pref_setting_text_style", testStyle);
+
 
 
     }

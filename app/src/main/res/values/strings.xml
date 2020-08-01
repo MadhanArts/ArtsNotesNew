@@ -4,10 +4,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
-    <string name="sync_pref">Sync</string>
-    <string name="sync_pref_summary">Get your photos, videos, etc… </string>
-
-
     <string name="pref_text_size_title">Text Size</string>
     <string name="pref_text_size_default">Medium</string>
     <string name="pref_text_size_summary">Medium</string>
@@ -30,6 +26,31 @@
         <item>Extra Large</item>
 
     </string-array>
+
+
+    <string name="pref_text_style_title">Font Style</string>
+    <string name="pref_text_style_default">Normal</string>
+    <string name="pref_text_style_summary">Normal</string>
+
+    <string-array name="pref_text_style_entries">
+
+        <item>Normal</item>
+        <item>Bold</item>
+        <item>Italic</item>
+        <item>Bold-Italic</item>
+
+    </string-array>
+
+
+    <string-array name="pref_text_style_values">
+
+        <item>Normal</item>
+        <item>Bold</item>
+        <item>Italic</item>
+        <item>Bold-Italic</item>
+
+    </string-array>
+
 
 
 </resources>

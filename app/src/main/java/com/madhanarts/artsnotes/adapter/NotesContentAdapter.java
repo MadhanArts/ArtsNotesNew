@@ -157,6 +157,7 @@ public class NotesContentAdapter extends RecyclerView.Adapter<NotesContentAdapte
             // Settings Values
             //settingsBundle.getFloat("pref_setting_text_size");
             notesEditText.setTextSize(settingsBundle.getFloat("pref_setting_text_size"));
+            notesEditText.setTypeface(null, settingsBundle.getInt("pref_setting_text_style"));
 
             // settings close
 

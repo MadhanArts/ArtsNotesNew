@@ -12,7 +12,6 @@
 
     <PreferenceCategory
         android:title="Notes"
-
         >
         <ListPreference
 
@@ -22,6 +21,17 @@
             android:entryValues="@array/pref_text_size_values"
             android:defaultValue="@string/pref_text_size_default"
             android:summary="@string/pref_text_size_summary"
+            />
+
+        <ListPreference
+
+            android:key="pref_note_text_style"
+            android:title="@string/pref_text_style_title"
+            android:entries="@array/pref_text_style_entries"
+            android:entryValues="@array/pref_text_style_values"
+            android:defaultValue="@string/pref_text_style_default"
+            android:summary="@string/pref_text_style_summary"
+
             />
 
     </PreferenceCategory>
@@ -36,6 +46,17 @@
             android:entryValues="@array/pref_text_size_values"
             android:defaultValue="@string/pref_text_size_default"
             android:summary="@string/pref_text_size_summary"
+            />
+
+        <ListPreference
+
+            android:key="pref_checklist_text_style"
+            android:title="@string/pref_text_style_title"
+            android:entries="@array/pref_text_style_entries"
+            android:entryValues="@array/pref_text_style_values"
+            android:defaultValue="@string/pref_text_style_default"
+            android:summary="@string/pref_text_style_summary"
+
             />
 
 

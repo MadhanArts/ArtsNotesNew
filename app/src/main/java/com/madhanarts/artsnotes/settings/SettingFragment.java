@@ -1,4 +1,4 @@
-package com.madhanarts.artsnotes;
+package com.madhanarts.artsnotes.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import androidx.annotation.Nullable;
+
+import com.madhanarts.artsnotes.R;
 
 public class SettingFragment extends PreferenceFragment {
 
@@ -16,6 +18,9 @@ public class SettingFragment extends PreferenceFragment {
 
     public static final String PREF_NOTE_TEXT_SIZE = "pref_note_text_size";
     public static final String PREF_CHECKLIST_TEXT_SIZE = "pref_checklist_text_size";
+
+    public static final String PREF_NOTE_TEXT_STYLE = "pref_note_text_style";
+    public static final String PREF_CHECKLIST_TEXT_STYLE = "pref_checklist_text_style";
 
     private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
 
@@ -46,6 +51,18 @@ public class SettingFragment extends PreferenceFragment {
                     checklistTextSizePreference.setSummary(sharedPreferences.getString(key, "Medium"));
                 }
 
+                if (key.equals(PREF_NOTE_TEXT_STYLE))
+                {
+                    Preference checklistTextSizePreference = findPreference(key);
+                    checklistTextSizePreference.setSummary(sharedPreferences.getString(key, "Normal"));
+                }
+
+                if (key.equals(PREF_CHECKLIST_TEXT_STYLE))
+                {
+                    Preference checklistTextSizePreference = findPreference(key);
+                    checklistTextSizePreference.setSummary(sharedPreferences.getString(key, "Normal"));
+                }
+
             }
         };
 
@@ -67,6 +84,13 @@ public class SettingFragment extends PreferenceFragment {
 
         Preference checklistTextSizePreference = findPreference(PREF_CHECKLIST_TEXT_SIZE);
         checklistTextSizePreference.setSummary(getPreferenceScreen().getSharedPreferences().getString(PREF_CHECKLIST_TEXT_SIZE, "Medium"));
+
+        Preference textStylePreference = findPreference(PREF_NOTE_TEXT_STYLE);
+        textStylePreference.setSummary(getPreferenceScreen().getSharedPreferences().getString(PREF_NOTE_TEXT_STYLE, "Normal"));
+
+        Preference checklistTextStylePreference = findPreference(PREF_CHECKLIST_TEXT_STYLE);
+        checklistTextStylePreference.setSummary(getPreferenceScreen().getSharedPreferences().getString(PREF_CHECKLIST_TEXT_STYLE, "Normal"));
+
 
     }
 

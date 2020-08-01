@@ -1,9 +1,13 @@
 package com.madhanarts.artsnotes.adapter;
 
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -47,7 +51,7 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NotesChecklistViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final NotesChecklistViewHolder holder, int position) {
 
         String tempItem = noteChecklistItems.get(position);
         if (noteChecklistItems.get(position).contains("[c]"))
@@ -55,12 +59,14 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
 
             tempItem = tempItem.substring(0, tempItem.lastIndexOf("["));
             holder.noteChecklistText.setPaintFlags(holder.noteChecklistText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.noteChecklistText.setTextColor(Color.DKGRAY);
             holder.checked = true;
 
         }
         else
         {
             holder.noteChecklistText.setPaintFlags(holder.noteChecklistText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            holder.noteChecklistText.setTextColor(Color.BLACK);
             holder.checked = false;
         }
         holder.noteChecklistText.setText(tempItem);
@@ -70,7 +76,34 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
             notesCheckListFragment.checklistModeInfo.setText("Edit Mode");
             holder.noteChecklistMover.setVisibility(View.VISIBLE);
             holder.noteChecklistClear.setVisibility(View.VISIBLE);
+            holder.noteChecklistDoneCheck.setVisibility(View.GONE);
         }
+
+        if (NotesCheckListFragment.option.equals("get_exist") && !doubleTapped)
+        {
+
+            if (holder.checked)
+            {
+                holder.noteChecklistDoneCheck.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                holder.noteChecklistDoneCheck.setVisibility(View.GONE);
+            }
+
+        }
+
+        holder.noteChecklistMover.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+                {
+                    notesCheckListFragment.itemTouchHelper.startDrag(holder);
+                }
+
+                return true;
+            }
+        });
 
     }
 
@@ -81,20 +114,22 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
 
     public class NotesChecklistViewHolder extends RecyclerView.ViewHolder {
 
-        public ConstraintLayout noteChecklistMover;
+        public ImageView noteChecklistMover;
         public TextView noteChecklistText;
-        private boolean checked;
+        public boolean checked;
         public ImageButton noteChecklistClear;
+        public ImageView noteChecklistDoneCheck;
 
         public NotesChecklistViewHolder(@NonNull final View itemView) {
             super(itemView);
 
             noteChecklistMover = itemView.findViewById(R.id.notes_checklist_item_mover);
-
             noteChecklistText = itemView.findViewById(R.id.notes_checklist_item_text);
             noteChecklistText.setTextSize(settingsBundle.getFloat("pref_setting_text_size"));
+            noteChecklistText.setTypeface(null, settingsBundle.getInt("pref_setting_text_style"));
 
             noteChecklistClear = itemView.findViewById(R.id.notes_checklist_item_clear);
+            noteChecklistDoneCheck = itemView.findViewById(R.id.notes_checklist_item_done_check);
 
             if (NotesCheckListFragment.option.equals("create_new"))
             {
@@ -124,20 +159,24 @@ public class NotesChecklistAdapter extends RecyclerView.Adapter<NotesChecklistAd
                         if (!checked)
                         {
                             noteChecklistText.setPaintFlags(noteChecklistText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            noteChecklistText.setTextColor(Color.DKGRAY);
                             String tempItem = noteChecklistItems.get(getAdapterPosition());
                             noteChecklistItems.set(getAdapterPosition(), tempItem + "[c]");
 
                             Log.d("check_op", noteChecklistItems.get(getAdapterPosition()));
                             checked = true;
+                            noteChecklistDoneCheck.setVisibility(View.VISIBLE);
                         }
                         else
                         {
                             noteChecklistText.setPaintFlags(noteChecklistText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                            noteChecklistText.setTextColor(Color.BLACK);
                             String tempItem = noteChecklistItems.get(getAdapterPosition());
                             noteChecklistItems.set(getAdapterPosition(), tempItem.substring(0, tempItem.lastIndexOf("[")));
 
                             Log.d("check_op", noteChecklistItems.get(getAdapterPosition()));
                             checked = false;
+                            noteChecklistDoneCheck.setVisibility(View.GONE);
                         }
                     }
                 }

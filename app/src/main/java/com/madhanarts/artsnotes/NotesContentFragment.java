@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.madhanarts.artsnotes.adapter.NotesContentAdapter;
 import com.madhanarts.artsnotes.dialog.RecordDialog;
 import com.madhanarts.artsnotes.model.NoteItem;
+import com.madhanarts.artsnotes.settings.SettingFragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -1019,6 +1021,14 @@ public class NotesContentFragment extends Fragment implements NotesContentAdapte
         float testSize;
         testSize = textSizeValues[textSizeKeys.indexOf(textSizeVal)];
         settingsBundle.putFloat("pref_setting_text_size", testSize);
+
+        String textStyleVal = sharedPreferences.getString(SettingFragment.PREF_NOTE_TEXT_STYLE, "Normal");
+
+        List<String> textStyleKeys = Arrays.asList(activity.getResources().getStringArray(R.array.pref_text_style_values));
+        int[] textStyleValues = {Typeface.NORMAL, Typeface.BOLD, Typeface.ITALIC, Typeface.BOLD_ITALIC};
+        int testStyle;
+        testStyle = textStyleValues[textStyleKeys.indexOf(textStyleVal)];
+        settingsBundle.putInt("pref_setting_text_style", testStyle);
 
 
     }
